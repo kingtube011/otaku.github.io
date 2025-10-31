@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="google-adsense-account" content="ca-pub-1233665276169336" />
-  <title>オタク同時再生プレイヤー</title>
+  <title>オタク同時再生ツール</title>
   <style>
     body {
       background: #0e0e0e;
@@ -22,6 +22,28 @@
     h1 {
       margin-bottom: 5px;
       font-size: 1.8rem;
+    }
+
+    .top-buttons {
+      margin-bottom: 15px;
+    }
+
+    .top-buttons a {
+      display: inline-block;
+      margin: 5px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+    }
+
+    .yt-btn {
+      background-color: #ff0000;
+    }
+
+    .twitch-btn {
+      background-color: #9146ff;
     }
 
     p.description {
@@ -54,10 +76,12 @@
 
     #playerContainer {
       display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(48%, 1fr));
+      grid-template-columns: repeat(2, 1fr);
       gap: 10px;
       padding: 10px;
       justify-content: center;
+      max-width: 1200px;
+      margin: auto;
     }
 
     .player {
@@ -103,7 +127,7 @@
     .sns-links a {
       color: #bbb;
       text-decoration: none;
-      margin: 0 8px;
+      margin: 0 6px;
       transition: color 0.2s;
       font-size: 0.9rem;
     }
@@ -126,10 +150,13 @@
 <body>
   <header>
     <h1>🎬 オタク同時再生ツール</h1>
+    <div class="top-buttons">
+      <a href="https://www.youtube.com" target="_blank" class="yt-btn">YouTubeへ</a>
+      <a href="https://www.twitch.tv" target="_blank" class="twitch-btn">Twitchへ</a>
+    </div>
     <p class="description">
-      YouTube・Twitch対応。<br>
-      URLを入力して追加し、同時再生・一時停止ができます。<br>
-      ※Twitchは現状手動操作が必要な場合があります。
+      YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。<br>
+      ※Twitchは現状、手動操作が必要な場合があります。
     </p>
     <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" />
     <button onclick="addVideo()">追加</button>
@@ -151,18 +178,22 @@
   <script>
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
-    const videos = [];
 
-    // 追加ボタン
     function addVideo() {
       const url = urlInput.value.trim();
       if (!url) return alert("URLを入力してください！");
+
       let embedUrl = "";
 
+      // YouTube (通常, 短縮, ライブ対応)
       if (url.includes("youtube.com") || url.includes("youtu.be")) {
-        const videoId = url.split("v=")[1]?.split("&")[0] || url.split("youtu.be/")[1];
+        const match = url.match(/(?:v=|youtu\.be\/|live\/)([a-zA-Z0-9_-]{6,})/);
+        const videoId = match ? match[1] : null;
+        if (!videoId) return alert("YouTubeのURLが無効です！");
         embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
-      } else if (url.includes("twitch.tv")) {
+      }
+      // Twitch (VOD / ライブ対応)
+      else if (url.includes("twitch.tv")) {
         const channel = url.split("twitch.tv/")[1].split("/")[0];
         embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
       } else {
@@ -179,19 +210,19 @@
       urlInput.value = "";
     }
 
-    // 同時再生
+    // 同時再生（YouTubeのみ）
     function playAll() {
       const iframes = container.querySelectorAll("iframe");
       iframes.forEach(f => f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'));
     }
 
-    // 一括一時停止
+    // 一括停止（YouTubeのみ）
     function pauseAll() {
       const iframes = container.querySelectorAll("iframe");
       iframes.forEach(f => f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'));
     }
 
-    // ドラッグ＆ドロップで並び替え
+    // 並び替え（ドラッグ＆ドロップ）
     new Sortable(container, {
       animation: 150,
       ghostClass: "sortable-ghost"
