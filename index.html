@@ -38,13 +38,8 @@
       font-weight: bold;
     }
 
-    .yt-btn {
-      background-color: #ff0000;
-    }
-
-    .twitch-btn {
-      background-color: #9146ff;
-    }
+    .yt-btn { background-color: #ff0000; }
+    .twitch-btn { background-color: #9146ff; }
 
     p.description {
       font-size: 0.9rem;
@@ -69,10 +64,7 @@
       color: white;
       cursor: pointer;
     }
-
-    button:hover {
-      background: #e73370;
-    }
+    button:hover { background: #e73370; }
 
     #playerContainer {
       display: grid;
@@ -92,10 +84,7 @@
       overflow: hidden;
       transition: transform 0.3s;
     }
-
-    .player:hover {
-      transform: scale(1.01);
-    }
+    .player:hover { transform: scale(1.01); }
 
     .delete-btn {
       position: absolute;
@@ -112,10 +101,26 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
+    .player:hover .delete-btn { opacity: 1; }
 
-    .player:hover .delete-btn {
-      opacity: 1;
+    #historyContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 20px;
+      gap: 10px;
     }
+
+    .history-item {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
+      cursor: pointer;
+      border: 2px solid #444;
+      transition: transform 0.2s;
+    }
+    .history-item:hover { transform: scale(1.1); }
 
     footer {
       text-align: center;
@@ -123,7 +128,6 @@
       font-size: 0.9rem;
       color: #bbb;
     }
-
     .sns-links a {
       color: #bbb;
       text-decoration: none;
@@ -131,19 +135,11 @@
       transition: color 0.2s;
       font-size: 0.9rem;
     }
-
-    .sns-links a:hover {
-      color: #ff4081;
-    }
+    .sns-links a:hover { color: #ff4081; }
 
     @media (max-width: 768px) {
-      input[type="text"] {
-        width: 80%;
-        margin-bottom: 10px;
-      }
-      #playerContainer {
-        grid-template-columns: 1fr;
-      }
+      input[type="text"] { width: 80%; margin-bottom: 10px; }
+      #playerContainer { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -165,6 +161,7 @@
   </header>
 
   <div id="playerContainer"></div>
+  <div id="historyContainer"></div>
 
   <footer>
     <div class="sns-links">
@@ -178,24 +175,48 @@
   <script>
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
+    const historyContainer = document.getElementById("historyContainer");
+    let history = JSON.parse(localStorage.getItem("videoHistory") || "[]");
 
-    function addVideo() {
-      const url = urlInput.value.trim();
+    function renderHistory() {
+      historyContainer.innerHTML = "";
+      history.forEach(item => {
+        const img = document.createElement("img");
+        img.src = item.icon;
+        img.className = "history-item";
+        img.title = item.name;
+        img.onclick = () => addVideo(item.url);
+        historyContainer.appendChild(img);
+      });
+    }
+
+    async function getYoutubeIcon(url) {
+      const res = await fetch(`https://www.youtube.com/oembed?url=${url}&format=json`);
+      const data = await res.json();
+      return data.thumbnail_url.replace("hqdefault", "default");
+    }
+
+    function getTwitchIcon(channel) {
+      return `https://static-cdn.jtvnw.net/jtv_user_pictures/${channel}-profile_image-300x300.png`;
+    }
+
+    async function addVideo(inputUrl = null) {
+      const url = inputUrl || urlInput.value.trim();
       if (!url) return alert("URLを入力してください！");
+      let embedUrl = "", icon = "", name = "";
 
-      let embedUrl = "";
-
-      // YouTube (通常, 短縮, ライブ対応)
       if (url.includes("youtube.com") || url.includes("youtu.be")) {
         const match = url.match(/(?:v=|youtu\.be\/|live\/)([a-zA-Z0-9_-]{6,})/);
         const videoId = match ? match[1] : null;
         if (!videoId) return alert("YouTubeのURLが無効です！");
         embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
-      }
-      // Twitch (VOD / ライブ対応)
-      else if (url.includes("twitch.tv")) {
+        icon = await getYoutubeIcon(url);
+        name = "YouTube動画";
+      } else if (url.includes("twitch.tv")) {
         const channel = url.split("twitch.tv/")[1].split("/")[0];
         embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
+        icon = getTwitchIcon(channel);
+        name = channel;
       } else {
         return alert("対応していないURL形式です。");
       }
@@ -208,25 +229,29 @@
       `;
       container.appendChild(frame);
       urlInput.value = "";
+
+      if (!history.some(h => h.url === url)) {
+        history.unshift({ url, icon, name });
+        if (history.length > 12) history.pop();
+        localStorage.setItem("videoHistory", JSON.stringify(history));
+        renderHistory();
+      }
     }
 
-    // 同時再生（YouTubeのみ）
     function playAll() {
-      const iframes = container.querySelectorAll("iframe");
-      iframes.forEach(f => f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'));
+      document.querySelectorAll("iframe").forEach(f =>
+        f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*')
+      );
     }
 
-    // 一括停止（YouTubeのみ）
     function pauseAll() {
-      const iframes = container.querySelectorAll("iframe");
-      iframes.forEach(f => f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'));
+      document.querySelectorAll("iframe").forEach(f =>
+        f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*')
+      );
     }
 
-    // 並び替え（ドラッグ＆ドロップ）
-    new Sortable(container, {
-      animation: 150,
-      ghostClass: "sortable-ghost"
-    });
+    new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
+    renderHistory();
   </script>
 </body>
 </html>
