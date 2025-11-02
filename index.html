@@ -16,6 +16,7 @@
       padding: 0;
       text-align: center;
     }
+
     header { padding: 20px 10px; }
     h1 { margin-bottom: 5px; font-size: 1.8rem; }
 
@@ -32,20 +33,21 @@
     .twitch-btn { background-color: #9146ff; }
 
     #playerContainer {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
       gap: 4px;
       padding: 4px;
-      justify-content: center;
     }
 
     .player {
       position: relative;
-      aspect-ratio: 16/9;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
-      transition: transform 0.3s;
+      transition: transform 0.3s, width 0.3s, height 0.3s;
+      aspect-ratio: 16 / 9;
     }
 
     .delete-btn {
@@ -65,24 +67,6 @@
     }
     .player:hover .delete-btn { opacity: 1; }
 
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9rem;
-      color: #bbb;
-      line-height: 1.8;
-    }
-
-    button {
-      padding: 10px 15px;
-      background: #ff4081;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-    }
-    button:hover { background: #e73370; }
-
     .streamer-list {
       margin: 10px auto;
       max-width: 800px;
@@ -98,14 +82,33 @@
       text-decoration: underline;
     }
 
+    footer {
+      text-align: center;
+      padding: 20px;
+      font-size: 0.9rem;
+      color: #bbb;
+      line-height: 1.8;
+    }
     .footer-links a {
       color: #bbb;
       text-decoration: none;
       margin: 0 6px;
       transition: color 0.2s;
     }
-    .footer-links a:hover {
-      color: #ff4081;
+    .footer-links a:hover { color: #ff4081; }
+
+    button {
+      padding: 10px 15px;
+      background: #ff4081;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover { background: #e73370; }
+
+    @media (max-width: 768px) {
+      input[type="text"] { width: 80%; margin-bottom: 10px; }
     }
   </style>
 </head>
@@ -142,7 +145,6 @@
   <script>
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
-
     const YT_API_KEY = "AIzaSyCE_ibJnbv6DNMByQEmKM_XLU64oJ11KuE";
 
     const youtubeChannels = {
@@ -194,10 +196,17 @@
       div.className = "player";
       div.innerHTML = `
         <iframe src="${embedUrl}" allowfullscreen frameborder="0" width="100%" height="100%"></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove()">×</button>`;
+        <button class="delete-btn" onclick="removePlayer(this)">×</button>`;
       container.appendChild(div);
       urlInput.value = "";
       saveState();
+      resizePlayers();
+    }
+
+    function removePlayer(btn) {
+      btn.parentElement.remove();
+      saveState();
+      resizePlayers();
     }
 
     function playAll() {
@@ -231,8 +240,27 @@
         div.className = "player";
         div.innerHTML = `
           <iframe src="${src}" allowfullscreen frameborder="0" width="100%" height="100%"></iframe>
-          <button class="delete-btn" onclick="this.parentElement.remove()">×</button>`;
+          <button class="delete-btn" onclick="removePlayer(this)">×</button>`;
         container.appendChild(div);
+      });
+      resizePlayers();
+    }
+
+    function resizePlayers() {
+      const players = document.querySelectorAll(".player");
+      const total = players.length;
+      if (total === 0) return;
+
+      const containerWidth = window.innerWidth;
+      let cols = 1;
+
+      if (containerWidth > 1300 && total >= 3) cols = 3;
+      else if (containerWidth > 900 && total >= 2) cols = 2;
+
+      const widthPercent = 100 / cols;
+      players.forEach(p => {
+        p.style.width = `${widthPercent}%`;
+        p.style.aspectRatio = "16/9";
       });
     }
 
@@ -257,6 +285,7 @@
       }
     }
 
+    window.addEventListener("resize", resizePlayers);
     new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
     renderStreamers();
     restoreState();
