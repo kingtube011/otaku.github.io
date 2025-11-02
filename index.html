@@ -78,12 +78,12 @@
     const historyContainer = document.getElementById("historyContainer");
 
     const youtubeCreators = [
-      { name: "葛葉", url: "https://www.youtube.com/@Kuzuha/streams" },
-      { name: "叶", url: "https://www.youtube.com/@Kanae/streams" },
-      { name: "渋谷ハル", url: "https://www.youtube.com/@ShibuyaHAL/streams" },
-      { name: "一ノ瀬うるは", url: "https://www.youtube.com/@Urukaichinose/streams" },
-      { name: "橘ひなの", url: "https://www.youtube.com/@hinanotachibana/streams" },
-      { name: "小森めと", url: "https://www.youtube.com/@Met_Komori/streams" }
+      { name: "葛葉", url: "https://www.youtube.com/embed/live_stream?channel=UCkIimWZ9gBJRamKF0rmPU8w" },
+      { name: "叶", url: "https://www.youtube.com/embed/live_stream?channel=UCspv01oxUFf_MTSipURRhkA" },
+      { name: "渋谷ハル", url: "https://www.youtube.com/embed/live_stream?channel=UChLfthKoUV502J7gU9STArg" },
+      { name: "一ノ瀬うるは", url: "https://www.youtube.com/embed/live_stream?channel=UCt30jJgChL8qeT9VPadidSw" },
+      { name: "橘ひなの", url: "https://www.youtube.com/embed/live_stream?channel=UCvUc0m317LWTTPZoBQV479A" },
+      { name: "小森めと", url: "https://www.youtube.com/embed/live_stream?channel=UCzUNASdzI4PV5SlqtYwAkKQ" }
     ];
 
     const twitchCreators = [
@@ -103,9 +103,9 @@
 
     function renderLists() {
       document.getElementById("youtubeList").innerHTML =
-        youtubeCreators.map(c => `<span onclick="addVideo('${c.url}')">${c.name}</span>`).join(" ");
+        youtubeCreators.map(c => `<span onclick="addVideo('${c.url}', '${c.name}')">${c.name}</span>`).join(" ");
       document.getElementById("twitchList").innerHTML =
-        twitchCreators.map(c => `<span onclick="addVideo('${c.url}')">${c.name}</span>`).join(" ");
+        twitchCreators.map(c => `<span onclick="addVideo('${c.url}', '${c.name}')">${c.name}</span>`).join(" ");
     }
 
     function renderHistory() {
@@ -114,41 +114,22 @@
         const div = document.createElement("div");
         div.className = "history-item";
         div.textContent = item.name;
-        div.onclick = () => addVideo(item.url);
+        div.onclick = () => addVideo(item.url, item.name);
         historyContainer.appendChild(div);
       });
     }
 
-    async function addVideo(inputUrl = null) {
+    function addVideo(inputUrl = null, name = "") {
       const url = inputUrl || urlInput.value.trim();
       if (!url) return alert("URLを入力してください！");
       let embedUrl = "";
 
-      // YouTube
-      if (url.includes("youtube.com") || url.includes("youtu.be")) {
-        let channelId = null;
-        const matchVideo = url.match(/[?&]v=([a-zA-Z0-9_-]{6,})/) || url.match(/youtu\.be\/([a-zA-Z0-9_-]{6,})/);
-        if (matchVideo) {
-          embedUrl = `https://www.youtube.com/embed/${matchVideo[1]}?enablejsapi=1`;
-        } else {
-          // /@user, /channel/, /c/, /live対応
-          try {
-            const res = await fetch(`https://www.youtube.com/oembed?url=${url}&format=json`);
-            const data = await res.json();
-            const channelRes = await fetch(data.author_url);
-            const html = await channelRes.text();
-            const idMatch = html.match(/"channelId":"(UC[0-9A-Za-z_-]+)"/);
-            if (idMatch) channelId = idMatch[1];
-            if (!channelId) throw new Error();
-            embedUrl = `https://www.youtube.com/embed/live_stream?channel=${channelId}`;
-          } catch {
-            return alert("YouTubeのURLが無効です！");
-          }
-        }
-      }
-
-      // Twitch
-      else if (url.includes("twitch.tv")) {
+      if (url.includes("youtube.com/embed/live_stream")) embedUrl = url;
+      else if (url.includes("youtube.com") || url.includes("youtu.be")) {
+        const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
+        if (!match) return alert("YouTubeのURLが無効です！");
+        embedUrl = `https://www.youtube.com/embed/${match[1]}?enablejsapi=1`;
+      } else if (url.includes("twitch.tv")) {
         const channel = url.split("twitch.tv/")[1].split("/")[0];
         embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
       } else return alert("対応していないURL形式です。");
@@ -163,8 +144,8 @@
       adjustPlayerSizes();
 
       if (!history.some(h => h.url === url)) {
-        history.unshift({ url, name: url });
-        if (history.length > 12) history.pop();
+        history.unshift({ url, name });
+        if (history.length > 4) history.pop(); // ✅ 履歴を4件に制限
         localStorage.setItem("videoHistory", JSON.stringify(history));
         renderHistory();
       }
