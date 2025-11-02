@@ -104,44 +104,46 @@
     .player:hover .delete-btn { opacity: 1; }
 
     #twitchPopularContainer {
-      margin-top: 15px;
+      margin: 20px auto;
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 10px;
+      gap: 12px;
+      max-width: 800px;
     }
 
-    .twitch-icon {
-      width: 60px;
-      height: 60px;
-      border-radius: 50%;
-      border: 2px solid #555;
+    .twitch-name {
+      color: #9d7cff;
       cursor: pointer;
-      transition: transform 0.2s, border-color 0.2s;
+      transition: color 0.2s;
     }
-    .twitch-icon:hover {
-      transform: scale(1.1);
-      border-color: #9146ff;
+    .twitch-name:hover {
+      color: #c8a8ff;
+      text-decoration: underline;
     }
 
     #historyContainer {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      margin-top: 20px;
-      gap: 10px;
+      background: #1a1a1a;
+      margin-top: 30px;
+      padding: 15px;
+      border-top: 1px solid #333;
+    }
+
+    #historyContainer h3 {
+      color: #ff80a0;
+      font-size: 1rem;
+      margin-bottom: 10px;
     }
 
     .history-item {
-      width: 50px;
-      height: 50px;
-      border-radius: 50%;
-      overflow: hidden;
+      display: inline-block;
+      color: #bbb;
+      margin: 4px 8px;
       cursor: pointer;
-      border: 2px solid #444;
-      transition: transform 0.2s;
+      font-size: 0.9rem;
+      transition: color 0.2s;
     }
-    .history-item:hover { transform: scale(1.1); }
+    .history-item:hover { color: #ff4081; }
 
     footer {
       text-align: center;
@@ -149,6 +151,7 @@
       font-size: 0.9rem;
       color: #bbb;
     }
+
     .sns-links a {
       color: #bbb;
       text-decoration: none;
@@ -156,7 +159,10 @@
       transition: color 0.2s;
       font-size: 0.9rem;
     }
-    .sns-links a:hover { color: #ff4081; }
+
+    .sns-links a:hover {
+      color: #ff4081;
+    }
 
     @media (max-width: 768px) {
       input[type="text"] { width: 80%; margin-bottom: 10px; }
@@ -175,18 +181,22 @@
       YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。<br>
       ※Twitchは現状、手動操作が必要な場合があります。
     </p>
+
     <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" />
     <button onclick="addVideo()">追加</button>
     <button onclick="playAll()">▶ 同時再生</button>
     <button onclick="pauseAll()">⏸ 一括一時停止</button>
     <button onclick="removeAll()" style="background:#b00020;">🗑 すべて削除</button>
 
-    <!-- 人気Twitch配信者アイコン -->
     <div id="twitchPopularContainer"></div>
   </header>
 
   <div id="playerContainer"></div>
-  <div id="historyContainer"></div>
+
+  <div id="historyContainer">
+    <h3>📜 再生履歴</h3>
+    <div id="historyList"></div>
+  </div>
 
   <footer>
     <div class="sns-links">
@@ -200,51 +210,60 @@
   <script>
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
-    const historyContainer = document.getElementById("historyContainer");
+    const historyList = document.getElementById("historyList");
     let history = JSON.parse(localStorage.getItem("videoHistory") || "[]");
 
-    function renderHistory() {
-      historyContainer.innerHTML = "";
-      history.forEach(item => {
-        const img = document.createElement("img");
-        img.src = item.icon;
-        img.className = "history-item";
-        img.title = item.name;
-        img.onclick = () => addVideo(item.url);
-        historyContainer.appendChild(img);
+    // Twitch人気配信者（固定）
+    const twitchPopulars = [
+      "fps_shaka",
+      "k4sen",
+      "spygea",
+      "kato_junichi0817",
+      "obobobo_",
+      "vodka_chaso",
+      "kenki",
+      "karubi",
+      "nekomugi_tororo"
+    ];
+
+    // 人気配信者リスト表示
+    function renderTwitchPopular() {
+      const c = document.getElementById("twitchPopularContainer");
+      c.innerHTML = "";
+      twitchPopulars.forEach(name => {
+        const span = document.createElement("span");
+        span.className = "twitch-name";
+        span.textContent = name;
+        span.onclick = () => addVideo(`https://www.twitch.tv/${name}`);
+        c.appendChild(span);
       });
     }
 
-    async function getYoutubeIcon(url) {
-      try {
-        const res = await fetch(`https://www.youtube.com/oembed?url=${url}&format=json`);
-        const data = await res.json();
-        return data.thumbnail_url.replace("hqdefault", "default");
-      } catch {
-        return "https://www.youtube.com/s/desktop/8b7a6f84/img/favicon_144x144.png";
-      }
-    }
-
-    function getTwitchIcon(channel) {
-      return `https://static-cdn.jtvnw.net/jtv_user_pictures/${channel}-profile_image-300x300.png`;
+    function renderHistory() {
+      historyList.innerHTML = "";
+      history.forEach(item => {
+        const span = document.createElement("span");
+        span.className = "history-item";
+        span.textContent = item.name;
+        span.onclick = () => addVideo(item.url);
+        historyList.appendChild(span);
+      });
     }
 
     async function addVideo(inputUrl = null) {
       const url = inputUrl || urlInput.value.trim();
       if (!url) return alert("URLを入力してください！");
-      let embedUrl = "", icon = "", name = "";
+      let embedUrl = "", name = "";
 
       if (url.includes("youtube.com") || url.includes("youtu.be")) {
         const match = url.match(/(?:v=|youtu\.be\/|live\/)([a-zA-Z0-9_-]{6,})/);
         const videoId = match ? match[1] : null;
         if (!videoId) return alert("YouTubeのURLが無効です！");
         embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
-        icon = await getYoutubeIcon(url);
         name = "YouTube動画";
       } else if (url.includes("twitch.tv")) {
         const channel = url.split("twitch.tv/")[1].split("/")[0];
         embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
-        icon = getTwitchIcon(channel);
         name = channel;
       } else {
         return alert("対応していないURL形式です。");
@@ -260,8 +279,8 @@
       urlInput.value = "";
 
       if (!history.some(h => h.url === url)) {
-        history.unshift({ url, icon, name });
-        if (history.length > 12) history.pop();
+        history.unshift({ url, name });
+        if (history.length > 20) history.pop();
         localStorage.setItem("videoHistory", JSON.stringify(history));
         renderHistory();
       }
@@ -285,33 +304,8 @@
       }
     }
 
-    // === 人気Twitch配信者（固定リスト） ===
-    const popularTwitchChannels = [
-      { name: "fps_shaka", display: "SHAKA" },
-      { name: "k4sen", display: "K4sen" },
-      { name: "spygea", display: "SPYGEA" },
-      { name: "kato_junichi0817", display: "加藤純一" },
-      { name: "obobobo", display: "おぼ" },
-      { name: "vodka_stream", display: "ぼどか" },
-      { name: "kenki", display: "けんき" },
-      { name: "karubi", display: "かるび" },
-      { name: "nekomugi_tororo", display: "猫麦とろろ" }
-    ];
-
-    function renderTwitchPopular() {
-      const container = document.getElementById("twitchPopularContainer");
-      container.innerHTML = "";
-      popularTwitchChannels.forEach(ch => {
-        const img = document.createElement("img");
-        img.src = getTwitchIcon(ch.name);
-        img.title = ch.display;
-        img.className = "twitch-icon";
-        img.onclick = () => addVideo(`https://www.twitch.tv/${ch.name}`);
-        container.appendChild(img);
-      });
-    }
-
     new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
+
     renderTwitchPopular();
     renderHistory();
   </script>
