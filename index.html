@@ -6,177 +6,34 @@
   <meta name="google-adsense-account" content="ca-pub-1233665276169336" />
   <title>オタク同時再生ツール</title>
   <style>
-    body {
-      background: #0e0e0e;
-      color: #f0f0f0;
-      font-family: "Noto Sans JP", sans-serif;
-      margin: 0;
-      padding: 0;
-      text-align: center;
-    }
-
-    header {
-      padding: 20px 10px;
-    }
-
-    h1 {
-      margin-bottom: 5px;
-      font-size: 1.8rem;
-    }
-
-    .top-buttons {
-      margin-bottom: 15px;
-    }
-
-    .top-buttons a {
-      display: inline-block;
-      margin: 5px;
-      padding: 8px 14px;
-      border-radius: 6px;
-      color: white;
-      text-decoration: none;
-      font-weight: bold;
-    }
-
-    .yt-btn { background-color: #ff0000; }
-    .twitch-btn { background-color: #9146ff; }
-
-    p.description {
-      font-size: 0.9rem;
-      color: #ccc;
-      margin-bottom: 20px;
-    }
-
-    input[type="text"] {
-      width: 60%;
-      padding: 10px;
-      border-radius: 6px;
-      border: none;
-      outline: none;
-      margin-right: 10px;
-    }
-
-    button {
-      padding: 10px 15px;
-      background: #ff4081;
-      border: none;
-      border-radius: 6px;
-      color: white;
-      cursor: pointer;
-    }
+    body { background: #0e0e0e; color: #f0f0f0; font-family: "Noto Sans JP", sans-serif; margin: 0; text-align: center; }
+    header { padding: 20px 10px; }
+    h1 { margin-bottom: 5px; font-size: 1.8rem; }
+    .top-buttons { margin-bottom: 15px; }
+    .top-buttons a { display: inline-block; margin: 5px; padding: 8px 14px; border-radius: 6px; color: white; text-decoration: none; font-weight: bold; }
+    .yt-btn { background-color: #ff0000; } .twitch-btn { background-color: #9146ff; }
+    p.description { font-size: 0.9rem; color: #ccc; margin-bottom: 20px; }
+    input[type="text"] { width: 60%; padding: 10px; border-radius: 6px; border: none; outline: none; margin-right: 10px; }
+    button { padding: 10px 15px; background: #ff4081; border: none; border-radius: 6px; color: white; cursor: pointer; }
     button:hover { background: #e73370; }
-
-    #playerContainer {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 4px;
-      padding: 5px;
-      transition: all 0.3s ease;
-    }
-
-    .player {
-      position: relative;
-      background: #000;
-      border-radius: 6px;
-      overflow: hidden;
-      flex: 1 1 calc(50% - 8px);
-      aspect-ratio: 16/9;
-      transition: transform 0.3s, flex 0.3s;
-      max-width: 50%;
-    }
-
-    .player.small {
-      flex: 1 1 calc(33.3% - 6px);
-      max-width: 33.3%;
-    }
-
-    .player.tiny {
-      flex: 1 1 calc(25% - 6px);
-      max-width: 25%;
-    }
-
-    .player:hover { transform: scale(1.01); }
-
-    .delete-btn {
-      position: absolute;
-      top: 5px;
-      right: 5px;
-      background: rgba(255, 0, 0, 0.8);
-      border: none;
-      border-radius: 50%;
-      color: white;
-      width: 28px;
-      height: 28px;
-      font-size: 16px;
-      cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
+    #playerContainer { display: flex; flex-wrap: wrap; justify-content: center; gap: 3px; padding: 5px; transition: all 0.3s ease; }
+    .player { position: relative; background: #000; border-radius: 6px; overflow: hidden; flex: 1 1 calc(50% - 6px); aspect-ratio: 16/9; transition: all 0.3s; max-width: 50%; }
+    .player.small { flex: 1 1 calc(33.3% - 6px); max-width: 33.3%; }
+    .player.tiny { flex: 1 1 calc(25% - 6px); max-width: 25%; }
+    .delete-btn { position: absolute; top: 5px; right: 5px; background: rgba(255, 0, 0, 0.8); border: none; border-radius: 50%; color: white; width: 28px; height: 28px; font-size: 16px; cursor: pointer; opacity: 0; transition: opacity 0.3s; }
     .player:hover .delete-btn { opacity: 1; }
-
-    #streamLists {
-      margin-top: 15px;
-      font-size: 0.9rem;
-    }
-
-    .stream-list {
-      margin: 10px 0;
-    }
-
-    .stream-list span {
-      cursor: pointer;
-      margin: 0 5px;
-      color: #ff4081;
-    }
-
-    .stream-list span:hover {
-      text-decoration: underline;
-    }
-
-    #historySection {
-      margin-top: 25px;
-      color: #bbb;
-      font-size: 0.9rem;
-    }
-
-    #historyContainer {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 8px;
-    }
-
-    .history-item {
-      cursor: pointer;
-      background: #1e1e1e;
-      padding: 6px 10px;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-
+    #streamLists { margin-top: 15px; font-size: 0.9rem; }
+    .stream-list { margin: 10px 0; }
+    .stream-list span { cursor: pointer; margin: 0 5px; color: #ff4081; }
+    .stream-list span:hover { text-decoration: underline; }
+    #historySection { margin-top: 25px; color: #bbb; font-size: 0.9rem; }
+    #historyContainer { margin-top: 10px; display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+    .history-item { cursor: pointer; background: #1e1e1e; padding: 6px 10px; border-radius: 6px; transition: background 0.2s; }
     .history-item:hover { background: #333; }
-
-    footer {
-      text-align: center;
-      padding: 20px;
-      font-size: 0.9rem;
-      color: #bbb;
-    }
-    .sns-links a {
-      color: #bbb;
-      text-decoration: none;
-      margin: 0 6px;
-      transition: color 0.2s;
-      font-size: 0.9rem;
-    }
+    footer { text-align: center; padding: 20px; font-size: 0.9rem; color: #bbb; }
+    .sns-links a { color: #bbb; text-decoration: none; margin: 0 6px; transition: color 0.2s; font-size: 0.9rem; }
     .sns-links a:hover { color: #ff4081; }
-
-    @media (max-width: 768px) {
-      input[type="text"] { width: 80%; margin-bottom: 10px; }
-      .player { max-width: 100% !important; flex: 1 1 100% !important; }
-    }
+    @media (max-width: 768px) { input[type="text"] { width: 80%; margin-bottom: 10px; } .player { max-width: 100% !important; flex: 1 1 100% !important; } }
   </style>
 </head>
 <body>
@@ -186,11 +43,7 @@
       <a href="https://www.youtube.com" target="_blank" class="yt-btn">YouTubeへ</a>
       <a href="https://www.twitch.tv" target="_blank" class="twitch-btn">Twitchへ</a>
     </div>
-    <p class="description">
-      YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。<br>
-      ※Twitchは現状、手動操作が必要な場合があります。
-    </p>
-
+    <p class="description">YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。<br>※Twitchは現状、手動操作が必要な場合があります。</p>
     <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" />
     <button onclick="addVideo()">追加</button>
     <button onclick="playAll()">▶ 同時再生</button>
@@ -230,7 +83,7 @@
       { name: "渋谷ハル", url: "https://www.youtube.com/@ShibuyaHAL/streams" },
       { name: "一ノ瀬うるは", url: "https://www.youtube.com/@Urukaichinose/streams" },
       { name: "橘ひなの", url: "https://www.youtube.com/@hinanotachibana/streams" },
-      { name: "小森めと", url: "https://www.youtube.com/@Met_Komori/streams" },
+      { name: "小森めと", url: "https://www.youtube.com/@Met_Komori/streams" }
     ];
 
     const twitchCreators = [
@@ -243,16 +96,16 @@
       { name: "けんき", url: "https://www.twitch.tv/kenki" },
       { name: "赤見かるび", url: "https://www.twitch.tv/akamikarubi" },
       { name: "猫麦とろろ", url: "https://www.twitch.tv/tororo_vtuber" },
-      { name: "sasatikk", url: "https://www.twitch.tv/sasatikkwo" },
+      { name: "sasatikk", url: "https://www.twitch.tv/sasatikkwo" }
     ];
 
     let history = JSON.parse(localStorage.getItem("videoHistory") || "[]");
 
     function renderLists() {
-      const ytList = document.getElementById("youtubeList");
-      ytList.innerHTML = youtubeCreators.map(c => `<span onclick="addVideo('${c.url}')">${c.name}</span>`).join(" ");
-      const twList = document.getElementById("twitchList");
-      twList.innerHTML = twitchCreators.map(c => `<span onclick="addVideo('${c.url}')">${c.name}</span>`).join(" ");
+      document.getElementById("youtubeList").innerHTML =
+        youtubeCreators.map(c => `<span onclick="addVideo('${c.url}')">${c.name}</span>`).join(" ");
+      document.getElementById("twitchList").innerHTML =
+        twitchCreators.map(c => `<span onclick="addVideo('${c.url}')">${c.name}</span>`).join(" ");
     }
 
     function renderHistory() {
@@ -270,52 +123,47 @@
       const url = inputUrl || urlInput.value.trim();
       if (!url) return alert("URLを入力してください！");
       let embedUrl = "";
-      let name = url;
 
-      // YouTube対応 (動画・ライブ)
+      // YouTube
       if (url.includes("youtube.com") || url.includes("youtu.be")) {
-        const vMatch = url.match(/[?&]v=([a-zA-Z0-9_-]{6,})/) || url.match(/youtu\.be\/([a-zA-Z0-9_-]{6,})/);
-        const videoId = vMatch ? vMatch[1] : null;
-
-        if (videoId) {
-          embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+        let channelId = null;
+        const matchVideo = url.match(/[?&]v=([a-zA-Z0-9_-]{6,})/) || url.match(/youtu\.be\/([a-zA-Z0-9_-]{6,})/);
+        if (matchVideo) {
+          embedUrl = `https://www.youtube.com/embed/${matchVideo[1]}?enablejsapi=1`;
         } else {
+          // /@user, /channel/, /c/, /live対応
           try {
-            const oeUrl = `https://www.youtube.com/oembed?url=${encodeURIComponent(url)}&format=json`;
-            const oeRes = await fetch(oeUrl);
-            const oeData = await oeRes.json();
-            const chMatch = oeData.author_url.match(/\/channel\/(UC[0-9A-Za-z_-]+)/);
-            if (chMatch) {
-              embedUrl = `https://www.youtube.com/embed/live_stream?channel=${chMatch[1]}`;
-            } else {
-              throw new Error("No channel found");
-            }
+            const res = await fetch(`https://www.youtube.com/oembed?url=${url}&format=json`);
+            const data = await res.json();
+            const channelRes = await fetch(data.author_url);
+            const html = await channelRes.text();
+            const idMatch = html.match(/"channelId":"(UC[0-9A-Za-z_-]+)"/);
+            if (idMatch) channelId = idMatch[1];
+            if (!channelId) throw new Error();
+            embedUrl = `https://www.youtube.com/embed/live_stream?channel=${channelId}`;
           } catch {
-            return alert("YouTubeのURLが無効です。");
+            return alert("YouTubeのURLが無効です！");
           }
         }
       }
-      // Twitch対応
+
+      // Twitch
       else if (url.includes("twitch.tv")) {
         const channel = url.split("twitch.tv/")[1].split("/")[0];
         embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
-      } else {
-        return alert("対応していないURL形式です。");
-      }
+      } else return alert("対応していないURL形式です。");
 
       const frame = document.createElement("div");
       frame.className = "player";
-      frame.innerHTML = `
-        <iframe src="${embedUrl}" frameborder="0" allowfullscreen width="100%" height="100%"></iframe>
-        <button class="delete-btn" onclick="removePlayer(this)">×</button>
-      `;
+      frame.innerHTML = `<iframe src="${embedUrl}" frameborder="0" allowfullscreen width="100%" height="100%"></iframe>
+        <button class="delete-btn" onclick="removePlayer(this)">×</button>`;
       container.appendChild(frame);
       urlInput.value = "";
       saveState();
       adjustPlayerSizes();
 
       if (!history.some(h => h.url === url)) {
-        history.unshift({ url, name });
+        history.unshift({ url, name: url });
         if (history.length > 12) history.pop();
         localStorage.setItem("videoHistory", JSON.stringify(history));
         renderHistory();
@@ -348,10 +196,10 @@
     }
 
     function adjustPlayerSizes() {
-      const players = container.querySelectorAll(".player");
-      players.forEach(p => p.classList.remove("small", "tiny"));
-      if (players.length > 6) players.forEach(p => p.classList.add("tiny"));
-      else if (players.length > 2) players.forEach(p => p.classList.add("small"));
+      const p = container.querySelectorAll(".player");
+      p.forEach(x => x.classList.remove("small", "tiny"));
+      if (p.length > 6) p.forEach(x => x.classList.add("tiny"));
+      else if (p.length > 2) p.forEach(x => x.classList.add("small"));
     }
 
     function saveState() {
@@ -364,17 +212,14 @@
       urls.forEach(u => {
         const frame = document.createElement("div");
         frame.className = "player";
-        frame.innerHTML = `
-          <iframe src="${u}" frameborder="0" allowfullscreen width="100%" height="100%"></iframe>
-          <button class="delete-btn" onclick="removePlayer(this)">×</button>
-        `;
+        frame.innerHTML = `<iframe src="${u}" frameborder="0" allowfullscreen width="100%" height="100%"></iframe>
+          <button class="delete-btn" onclick="removePlayer(this)">×</button>`;
         container.appendChild(frame);
       });
       adjustPlayerSizes();
     }
 
     new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
-
     renderLists();
     renderHistory();
     loadState();
