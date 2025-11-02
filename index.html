@@ -3,13 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  
-  <!-- ✅ Google AdSense -->
   <meta name="google-adsense-account" content="ca-pub-1233665276169336">
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336"
      crossorigin="anonymous"></script>
-  <!-- ✅ /AdSense -->
-
   <title>オタク同時再生ツール</title>
   <style>
     body {
@@ -74,7 +70,9 @@
       padding: 20px;
       font-size: 0.9rem;
       color: #bbb;
+      line-height: 1.8;
     }
+
     button {
       padding: 10px 15px;
       background: #ff4081;
@@ -98,6 +96,16 @@
     .streamer-list span:hover {
       color: #fff;
       text-decoration: underline;
+    }
+
+    .footer-links a {
+      color: #bbb;
+      text-decoration: none;
+      margin: 0 6px;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover {
+      color: #ff4081;
     }
   </style>
 </head>
@@ -123,6 +131,11 @@
 
   <footer>
     <div>サイト運営支援 → <a href="https://paypal.me/otakuplayer486" target="_blank" style="color:#ff4081;">PayPal</a></div>
+    <div class="footer-links">
+      <a href="about.html">このサイトについて</a>｜
+      <a href="privacy.html">プライバシーポリシー</a>｜
+      <a href="terms.html">利用規約</a>
+    </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -142,7 +155,7 @@
     };
 
     const twitchStreamers = [
-      "fps_shaka", "k4sen", "spygea", "obormentv", "vodkavdk", 
+      "fps_shaka", "k4sen", "spygea", "obormentv", "vodkavdk",
       "kenki", "akamikarubi", "tororo_vtuber", "sasatikk"
     ];
 
@@ -250,4 +263,3 @@
   </script>
 </body>
 </html>
-
