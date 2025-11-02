@@ -103,6 +103,27 @@
     }
     .player:hover .delete-btn { opacity: 1; }
 
+    #twitchPopularContainer {
+      margin-top: 15px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+    }
+
+    .twitch-icon {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      border: 2px solid #555;
+      cursor: pointer;
+      transition: transform 0.2s, border-color 0.2s;
+    }
+    .twitch-icon:hover {
+      transform: scale(1.1);
+      border-color: #9146ff;
+    }
+
     #historyContainer {
       display: flex;
       flex-wrap: wrap;
@@ -159,6 +180,9 @@
     <button onclick="playAll()">▶ 同時再生</button>
     <button onclick="pauseAll()">⏸ 一括一時停止</button>
     <button onclick="removeAll()" style="background:#b00020;">🗑 すべて削除</button>
+
+    <!-- 人気Twitch配信者アイコン -->
+    <div id="twitchPopularContainer"></div>
   </header>
 
   <div id="playerContainer"></div>
@@ -192,9 +216,13 @@
     }
 
     async function getYoutubeIcon(url) {
-      const res = await fetch(`https://www.youtube.com/oembed?url=${url}&format=json`);
-      const data = await res.json();
-      return data.thumbnail_url.replace("hqdefault", "default");
+      try {
+        const res = await fetch(`https://www.youtube.com/oembed?url=${url}&format=json`);
+        const data = await res.json();
+        return data.thumbnail_url.replace("hqdefault", "default");
+      } catch {
+        return "https://www.youtube.com/s/desktop/8b7a6f84/img/favicon_144x144.png";
+      }
     }
 
     function getTwitchIcon(channel) {
@@ -257,7 +285,34 @@
       }
     }
 
+    // === 人気Twitch配信者（固定リスト） ===
+    const popularTwitchChannels = [
+      { name: "fps_shaka", display: "SHAKA" },
+      { name: "k4sen", display: "K4sen" },
+      { name: "spygea", display: "SPYGEA" },
+      { name: "kato_junichi0817", display: "加藤純一" },
+      { name: "obobobo", display: "おぼ" },
+      { name: "vodka_stream", display: "ぼどか" },
+      { name: "kenki", display: "けんき" },
+      { name: "karubi", display: "かるび" },
+      { name: "nekomugi_tororo", display: "猫麦とろろ" }
+    ];
+
+    function renderTwitchPopular() {
+      const container = document.getElementById("twitchPopularContainer");
+      container.innerHTML = "";
+      popularTwitchChannels.forEach(ch => {
+        const img = document.createElement("img");
+        img.src = getTwitchIcon(ch.name);
+        img.title = ch.display;
+        img.className = "twitch-icon";
+        img.onclick = () => addVideo(`https://www.twitch.tv/${ch.name}`);
+        container.appendChild(img);
+      });
+    }
+
     new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
+    renderTwitchPopular();
     renderHistory();
   </script>
 </body>
