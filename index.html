@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-adsense-account" content="ca-pub-1233665276169336">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336"
-     crossorigin="anonymous"></script>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336" crossorigin="anonymous"></script>
   <title>オタク同時再生ツール</title>
   <style>
     body {
@@ -36,18 +35,19 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      align-items: center;
       gap: 4px;
       padding: 4px;
     }
 
     .player {
-      position: relative;
+      flex: 1 1 calc(50% - 8px); /* デフォルト2列 */
+      max-width: calc(50% - 8px);
+      aspect-ratio: 16/9;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
-      transition: transform 0.3s, width 0.3s, height 0.3s;
-      aspect-ratio: 16 / 9;
+      position: relative;
+      transition: all 0.3s ease;
     }
 
     .delete-btn {
@@ -65,37 +65,15 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-    .player:hover .delete-btn { opacity: 1; }
 
-    .streamer-list {
-      margin: 10px auto;
-      max-width: 800px;
-      color: #ff80b0;
-    }
-    .streamer-list span {
-      margin: 0 4px;
-      cursor: pointer;
-      transition: color 0.2s;
-    }
-    .streamer-list span:hover {
-      color: #fff;
-      text-decoration: underline;
-    }
+    .player:hover .delete-btn { opacity: 1; }
 
     footer {
       text-align: center;
       padding: 20px;
       font-size: 0.9rem;
       color: #bbb;
-      line-height: 1.8;
     }
-    .footer-links a {
-      color: #bbb;
-      text-decoration: none;
-      margin: 0 6px;
-      transition: color 0.2s;
-    }
-    .footer-links a:hover { color: #ff4081; }
 
     button {
       padding: 10px 15px;
@@ -105,10 +83,26 @@
       color: white;
       cursor: pointer;
     }
+
     button:hover { background: #e73370; }
 
-    @media (max-width: 768px) {
-      input[type="text"] { width: 80%; margin-bottom: 10px; }
+    .streamer-list {
+      margin: 10px auto;
+      max-width: 900px;
+      color: #ff80b0;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .streamer-list span {
+      margin: 0 6px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .streamer-list span:hover {
+      color: #fff;
+      text-decoration: underline;
     }
   </style>
 </head>
@@ -119,7 +113,9 @@
       <a href="https://www.youtube.com" target="_blank" class="yt-btn">YouTubeへ</a>
       <a href="https://www.twitch.tv" target="_blank" class="twitch-btn">Twitchへ</a>
     </div>
+
     <p>YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。</p>
+
     <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" style="width:60%;padding:10px;border-radius:6px;">
     <button onclick="addVideo()">追加</button>
     <button onclick="playAll()">▶ 同時再生</button>
@@ -134,17 +130,13 @@
 
   <footer>
     <div>サイト運営支援 → <a href="https://paypal.me/otakuplayer486" target="_blank" style="color:#ff4081;">PayPal</a></div>
-    <div class="footer-links">
-      <a href="about.html">このサイトについて</a>｜
-      <a href="privacy.html">プライバシーポリシー</a>｜
-      <a href="terms.html">利用規約</a>
-    </div>
   </footer>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
+
     const YT_API_KEY = "AIzaSyCE_ibJnbv6DNMByQEmKM_XLU64oJ11KuE";
 
     const youtubeChannels = {
@@ -196,17 +188,11 @@
       div.className = "player";
       div.innerHTML = `
         <iframe src="${embedUrl}" allowfullscreen frameborder="0" width="100%" height="100%"></iframe>
-        <button class="delete-btn" onclick="removePlayer(this)">×</button>`;
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustPlayerLayout();">×</button>`;
       container.appendChild(div);
       urlInput.value = "";
       saveState();
-      resizePlayers();
-    }
-
-    function removePlayer(btn) {
-      btn.parentElement.remove();
-      saveState();
-      resizePlayers();
+      adjustPlayerLayout();
     }
 
     function playAll() {
@@ -240,28 +226,10 @@
         div.className = "player";
         div.innerHTML = `
           <iframe src="${src}" allowfullscreen frameborder="0" width="100%" height="100%"></iframe>
-          <button class="delete-btn" onclick="removePlayer(this)">×</button>`;
+          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustPlayerLayout();">×</button>`;
         container.appendChild(div);
       });
-      resizePlayers();
-    }
-
-    function resizePlayers() {
-      const players = document.querySelectorAll(".player");
-      const total = players.length;
-      if (total === 0) return;
-
-      const containerWidth = window.innerWidth;
-      let cols = 1;
-
-      if (containerWidth > 1300 && total >= 3) cols = 3;
-      else if (containerWidth > 900 && total >= 2) cols = 2;
-
-      const widthPercent = 100 / cols;
-      players.forEach(p => {
-        p.style.width = `${widthPercent}%`;
-        p.style.aspectRatio = "16/9";
-      });
+      adjustPlayerLayout();
     }
 
     async function renderStreamers() {
@@ -285,7 +253,27 @@
       }
     }
 
-    window.addEventListener("resize", resizePlayers);
+    function adjustPlayerLayout() {
+      const players = container.querySelectorAll(".player");
+      const count = players.length;
+      players.forEach(player => {
+        if (count === 1) {
+          player.style.flex = "1 1 100%";
+          player.style.maxWidth = "100%";
+        } else if (count === 2) {
+          player.style.flex = "1 1 50%";
+          player.style.maxWidth = "50%";
+        } else if (count === 3) {
+          player.style.flex = "1 1 33%";
+          player.style.maxWidth = "33%";
+        } else {
+          player.style.flex = "1 1 25%";
+          player.style.maxWidth = "25%";
+        }
+      });
+    }
+
+    new MutationObserver(adjustPlayerLayout).observe(container, { childList: true });
     new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
     renderStreamers();
     restoreState();
