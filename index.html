@@ -64,27 +64,32 @@
       color: white;
       cursor: pointer;
     }
+
     button:hover { background: #e73370; }
 
     #playerContainer {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
       gap: 10px;
       padding: 10px;
-      justify-content: center;
-      max-width: 1200px;
-      margin: auto;
+      transition: all 0.3s ease;
     }
 
     .player {
       position: relative;
-      aspect-ratio: 16/9;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
-      transition: transform 0.3s;
+      aspect-ratio: 16/9;
+      transition: all 0.3s ease;
     }
-    .player:hover { transform: scale(1.01); }
+
+    .player iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
 
     .delete-btn {
       position: absolute;
@@ -101,49 +106,59 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-    .player:hover .delete-btn { opacity: 1; }
 
-    #twitchPopularContainer {
-      margin: 20px auto;
+    .player:hover .delete-btn {
+      opacity: 1;
+    }
+
+    #twitchPopulars {
+      margin: 20px 0;
+      font-size: 0.95rem;
       display: flex;
-      flex-wrap: wrap;
       justify-content: center;
-      gap: 12px;
-      max-width: 800px;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
-    .twitch-name {
-      color: #9d7cff;
+    #twitchPopulars span {
       cursor: pointer;
-      transition: color 0.2s;
+      color: #ccc;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: #1f1f1f;
+      transition: background 0.2s;
     }
-    .twitch-name:hover {
-      color: #c8a8ff;
-      text-decoration: underline;
+
+    #twitchPopulars span:hover {
+      background: #9146ff;
+      color: white;
+    }
+
+    #historyTitle {
+      margin-top: 25px;
+      font-size: 1rem;
+      color: #ccc;
     }
 
     #historyContainer {
-      background: #1a1a1a;
-      margin-top: 30px;
-      padding: 15px;
-      border-top: 1px solid #333;
-    }
-
-    #historyContainer h3 {
-      color: #ff80a0;
-      font-size: 1rem;
-      margin-bottom: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      margin-top: 10px;
+      gap: 10px;
     }
 
     .history-item {
-      display: inline-block;
-      color: #bbb;
-      margin: 4px 8px;
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      overflow: hidden;
       cursor: pointer;
-      font-size: 0.9rem;
-      transition: color 0.2s;
+      border: 2px solid #444;
+      transition: transform 0.2s;
     }
-    .history-item:hover { color: #ff4081; }
+
+    .history-item:hover { transform: scale(1.1); }
 
     footer {
       text-align: center;
@@ -160,13 +175,11 @@
       font-size: 0.9rem;
     }
 
-    .sns-links a:hover {
-      color: #ff4081;
-    }
+    .sns-links a:hover { color: #ff4081; }
 
     @media (max-width: 768px) {
       input[type="text"] { width: 80%; margin-bottom: 10px; }
-      #playerContainer { grid-template-columns: 1fr; }
+      #playerContainer { flex-direction: column; align-items: center; }
     }
   </style>
 </head>
@@ -181,22 +194,17 @@
       YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。<br>
       ※Twitchは現状、手動操作が必要な場合があります。
     </p>
-
     <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" />
     <button onclick="addVideo()">追加</button>
     <button onclick="playAll()">▶ 同時再生</button>
     <button onclick="pauseAll()">⏸ 一括一時停止</button>
     <button onclick="removeAll()" style="background:#b00020;">🗑 すべて削除</button>
-
-    <div id="twitchPopularContainer"></div>
   </header>
 
+  <div id="twitchPopulars"></div>
+  <h2 id="historyTitle">📜 再生履歴</h2>
+  <div id="historyContainer"></div>
   <div id="playerContainer"></div>
-
-  <div id="historyContainer">
-    <h3>📜 再生履歴</h3>
-    <div id="historyList"></div>
-  </div>
 
   <footer>
     <div class="sns-links">
@@ -210,60 +218,71 @@
   <script>
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
-    const historyList = document.getElementById("historyList");
+    const historyContainer = document.getElementById("historyContainer");
+    const twitchPopularsDiv = document.getElementById("twitchPopulars");
     let history = JSON.parse(localStorage.getItem("videoHistory") || "[]");
 
-    // Twitch人気配信者（固定）
     const twitchPopulars = [
-      "fps_shaka",
-      "k4sen",
-      "spygea",
-      "kato_junichi0817",
-      "obobobo_",
-      "vodka_chaso",
-      "kenki",
-      "karubi",
-      "nekomugi_tororo"
+      { name: "SHAKA", url: "https://www.twitch.tv/fps_shaka" },
+      { name: "K4sen", url: "https://www.twitch.tv/k4sen" },
+      { name: "SPYGEA", url: "https://www.twitch.tv/spygea" },
+      { name: "加藤純一", url: "https://www.twitch.tv/kato_junichi0817" },
+      { name: "おぼ", url: "https://www.twitch.tv/obormentv" },
+      { name: "ぼどか", url: "https://www.twitch.tv/vodkavdk" },
+      { name: "けんき", url: "https://www.twitch.tv/kenki" },
+      { name: "赤見かるび", url: "https://www.twitch.tv/akamikarubi" },
+      { name: "猫麦とろろ", url: "https://www.twitch.tv/tororo_vtuber" },
+      { name: "sasatikk", url: "https://www.twitch.tv/sasatikk" }
     ];
 
-    // 人気配信者リスト表示
-    function renderTwitchPopular() {
-      const c = document.getElementById("twitchPopularContainer");
-      c.innerHTML = "";
-      twitchPopulars.forEach(name => {
+    function renderPopulars() {
+      twitchPopularsDiv.innerHTML = "";
+      twitchPopulars.forEach(ch => {
         const span = document.createElement("span");
-        span.className = "twitch-name";
-        span.textContent = name;
-        span.onclick = () => addVideo(`https://www.twitch.tv/${name}`);
-        c.appendChild(span);
+        span.textContent = ch.name;
+        span.onclick = () => addVideo(ch.url);
+        twitchPopularsDiv.appendChild(span);
       });
     }
 
     function renderHistory() {
-      historyList.innerHTML = "";
+      historyContainer.innerHTML = "";
       history.forEach(item => {
-        const span = document.createElement("span");
-        span.className = "history-item";
-        span.textContent = item.name;
-        span.onclick = () => addVideo(item.url);
-        historyList.appendChild(span);
+        const img = document.createElement("img");
+        img.src = item.icon;
+        img.className = "history-item";
+        img.title = item.name;
+        img.onclick = () => addVideo(item.url);
+        historyContainer.appendChild(img);
       });
+    }
+
+    async function getYoutubeIcon(url) {
+      const res = await fetch(`https://www.youtube.com/oembed?url=${url}&format=json`);
+      const data = await res.json();
+      return data.thumbnail_url.replace("hqdefault", "default");
+    }
+
+    function getTwitchIcon(channel) {
+      return `https://static-cdn.jtvnw.net/jtv_user_pictures/${channel}-profile_image-300x300.png`;
     }
 
     async function addVideo(inputUrl = null) {
       const url = inputUrl || urlInput.value.trim();
       if (!url) return alert("URLを入力してください！");
-      let embedUrl = "", name = "";
+      let embedUrl = "", icon = "", name = "";
 
       if (url.includes("youtube.com") || url.includes("youtu.be")) {
         const match = url.match(/(?:v=|youtu\.be\/|live\/)([a-zA-Z0-9_-]{6,})/);
         const videoId = match ? match[1] : null;
         if (!videoId) return alert("YouTubeのURLが無効です！");
         embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+        icon = await getYoutubeIcon(url);
         name = "YouTube動画";
       } else if (url.includes("twitch.tv")) {
         const channel = url.split("twitch.tv/")[1].split("/")[0];
         embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
+        icon = getTwitchIcon(channel);
         name = channel;
       } else {
         return alert("対応していないURL形式です。");
@@ -272,15 +291,17 @@
       const frame = document.createElement("div");
       frame.className = "player";
       frame.innerHTML = `
-        <iframe src="${embedUrl}" frameborder="0" allowfullscreen width="100%" height="100%"></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove()">×</button>
+        <iframe src="${embedUrl}" allowfullscreen></iframe>
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>
       `;
       container.appendChild(frame);
       urlInput.value = "";
+      adjustPlayerSizes();
+      saveState();
 
       if (!history.some(h => h.url === url)) {
-        history.unshift({ url, name });
-        if (history.length > 20) history.pop();
+        history.unshift({ url, icon, name });
+        if (history.length > 12) history.pop();
         localStorage.setItem("videoHistory", JSON.stringify(history));
         renderHistory();
       }
@@ -301,13 +322,42 @@
     function removeAll() {
       if (confirm("すべてのプレイヤーを削除しますか？")) {
         container.innerHTML = "";
+        localStorage.removeItem("playerState");
       }
     }
 
-    new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
+    function adjustPlayerSizes() {
+      const players = document.querySelectorAll(".player");
+      const count = players.length;
+      let widthPercent = 48;
+      if (count >= 3) widthPercent = 32;
+      if (count >= 5) widthPercent = 24;
+      players.forEach(p => (p.style.width = widthPercent + "%"));
+    }
 
-    renderTwitchPopular();
+    function saveState() {
+      const urls = [...document.querySelectorAll(".player iframe")].map(f => f.src);
+      localStorage.setItem("playerState", JSON.stringify(urls));
+    }
+
+    function loadState() {
+      const saved = JSON.parse(localStorage.getItem("playerState") || "[]");
+      saved.forEach(url => {
+        const frame = document.createElement("div");
+        frame.className = "player";
+        frame.innerHTML = `
+          <iframe src="${url}" allowfullscreen></iframe>
+          <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>
+        `;
+        container.appendChild(frame);
+      });
+      adjustPlayerSizes();
+    }
+
+    new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
+    renderPopulars();
     renderHistory();
+    loadState();
   </script>
 </body>
 </html>
