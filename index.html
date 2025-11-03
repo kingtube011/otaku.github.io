@@ -4,7 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-adsense-account" content="ca-pub-1233665276169336">
-  <title>プライバシーポリシー | オタク同時再生ツール</title>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336" crossorigin="anonymous"></script>
+  <title>オタク同時再生ツール</title>
   <style>
     body {
       background: #0e0e0e;
@@ -13,83 +14,281 @@
       margin: 0;
       padding: 0;
       text-align: center;
+      overflow-x: hidden;
     }
+
     header { padding: 20px 10px; }
-    h1 { font-size: 1.8rem; margin-bottom: 10px; }
+    h1 { margin-bottom: 5px; font-size: 1.8rem; }
 
-    main {
-      max-width: 900px;
-      margin: 20px auto;
-      padding: 20px;
-      line-height: 1.8;
-      text-align: left;
+    .top-buttons a {
+      display: inline-block;
+      margin: 5px;
+      padding: 8px 14px;
+      border-radius: 6px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
     }
 
-    a { color: #ff80b0; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+    .yt-btn { background-color: #ff0000; }
+    .twitch-btn { background-color: #9146ff; }
+
+    #playerContainer {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 2%;
+      box-sizing: border-box;
+    }
+
+    .player {
+      flex: 1 1 calc(50% - 12px);
+      max-width: calc(50% - 12px);
+      aspect-ratio: 16/9;
+      background: #000;
+      border-radius: 8px;
+      overflow: hidden;
+      position: relative;
+      transition: all 0.3s ease;
+    }
+
+    .delete-btn {
+      position: absolute;
+      top: 5px;
+      right: 5px;
+      background: rgba(255, 0, 0, 0.8);
+      border: none;
+      border-radius: 50%;
+      color: white;
+      width: 28px;
+      height: 28px;
+      font-size: 16px;
+      cursor: pointer;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .player:hover .delete-btn { opacity: 1; }
+
+    button {
+      padding: 10px 15px;
+      background: #ff4081;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+      margin: 4px;
+    }
+
+    button:hover { background: #e73370; }
+
+    .streamer-list {
+      margin: 10px auto;
+      max-width: 900px;
+      color: #ff80b0;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .streamer-list span {
+      margin: 0 6px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .streamer-list span:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
 
     footer {
       text-align: center;
       padding: 20px;
-      color: #bbb;
       font-size: 0.9rem;
+      color: #bbb;
       background: #111;
+    }
+
+    a.footer-link {
+      color: #ff80b0;
+      text-decoration: none;
+    }
+
+    a.footer-link:hover {
+      text-decoration: underline;
     }
   </style>
 </head>
 <body>
   <header>
-    <h1>プライバシーポリシー</h1>
-    <p><a href="index.html" style="color:#ff80b0;">← トップページに戻る</a></p>
+    <h1>🎬 オタク同時再生ツール</h1>
+    <div class="top-buttons">
+      <a href="https://www.youtube.com" target="_blank" class="yt-btn">YouTubeへ</a>
+      <a href="https://www.twitch.tv" target="_blank" class="twitch-btn">Twitchへ</a>
+    </div>
+    <p>YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。</p>
+
+    <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" style="width:60%;padding:10px;border-radius:6px;">
+    <button onclick="addVideo()">追加</button>
+    <button onclick="playAll()">▶ 同時再生</button>
+    <button onclick="pauseAll()">⏸ 一括一時停止</button>
+    <button onclick="removeAll()" style="background:#b00020;">🗑 すべて削除</button>
+
+    <div class="streamer-list" id="youtubeList"></div>
+    <div class="streamer-list" id="twitchList"></div>
   </header>
 
-  <main>
-    <h2>1. 個人情報の利用目的</h2>
-    <p>
-      当サイトでは、Google AdSenseを利用して広告を配信しています。  
-      Googleなどの第三者配信事業者は、Cookieを使用してユーザーの興味に基づく広告を表示する場合があります。
-    </p>
-
-    <h2>2. 広告配信について</h2>
-    <p>
-      Googleによる広告配信は、Googleの
-      <a href="https://policies.google.com/technologies/ads?hl=ja" target="_blank">広告ポリシー</a>
-      に基づいて行われます。  
-      Cookieの使用を無効にするには、
-      <a href="https://adssettings.google.com/authenticated?hl=ja" target="_blank">広告設定ページ</a>
-      で管理できます。
-    </p>
-
-    <h2>3. アクセス解析ツールについて</h2>
-    <p>
-      当サイトでは、アクセス解析ツール（Google Analyticsなど）を使用する場合があります。  
-      これらのツールはCookieを使用してトラフィックデータを収集しますが、個人を特定するものではありません。
-    </p>
-
-    <h2>4. 免責事項</h2>
-    <p>
-      当サイトで掲載する情報の正確性には細心の注意を払っていますが、内容の正確性や安全性を保証するものではありません。  
-      利用によって生じた損害について一切の責任を負いかねます。
-    </p>
-
-    <h2>5. 著作権について</h2>
-    <p>
-      当サイトに掲載されている画像・動画・文章の著作権は各権利所有者に帰属します。  
-      埋め込みプレイヤーは公式配信の仕様に基づいて提供しています。
-    </p>
-
-    <h2>6. プライバシーポリシーの変更</h2>
-    <p>
-      本ポリシーの内容は、法令変更や運営方針により予告なく改定される場合があります。
-    </p>
-
-    <p style="margin-top:20px;">制定日：2025年1月1日</p>
-  </main>
+  <div id="playerContainer"></div>
 
   <footer>
-    <a href="index.html">トップ</a>｜
-    <a href="about.html">このサイトについて</a><br>
-    © 2025 オタク同時再生ツール
+    <div>
+      <a href="about.html" class="footer-link">このサイトについて</a>｜
+      <a href="privacy.html" class="footer-link">プライバシーポリシー</a>
+    </div>
+    <div style="margin-top:10px;">サイト運営支援 → <a href="https://paypal.me/otakuplayer486" target="_blank" class="footer-link">PayPal</a></div>
+    <div style="margin-top:10px;">© 2025 オタク同時再生ツール</div>
   </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+  <script>
+    const container = document.getElementById("playerContainer");
+    const urlInput = document.getElementById("urlInput");
+
+    const YT_API_KEY = "AIzaSyCE_ibJnbv6DNMByQEmKM_XLU64oJ11KuE";
+
+    const youtubeChannels = {
+      "葛葉": "UCSFCh5NL4qXrAy9u-u2lX3g",
+      "叶": "UCspv01oxUFf_MTSipURRhkA",
+      "渋谷ハル": "UCV1xUwfM2v2oBtT3JNvic3w",
+      "一ノ瀬うるは": "UCiMG6VdScBabPhJ1ZtaVmbw",
+      "橘ひなの": "UCvUc0m317LWTTPZoBQV479A",
+      "小森めと": "UCzUNASdzI4PV5SlqtYwAkKQ"
+    };
+
+    const twitchStreamers = [
+      "fps_shaka", "k4sen", "spygea", "obormentv", "vodkavdk",
+      "kenki", "akamikarubi", "tororo_vtuber", "sasatikk"
+    ];
+
+    async function getYouTubeLiveVideo(channelId) {
+      const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${YT_API_KEY}`;
+      const res = await fetch(apiUrl);
+      const data = await res.json();
+      if (data.items && data.items.length > 0) {
+        return data.items[0].id.videoId;
+      }
+      return null;
+    }
+
+    function getTwitchEmbed(channel) {
+      return `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
+    }
+
+    async function addVideo(url = null) {
+      let input = url || urlInput.value.trim();
+      if (!input) return alert("URLを入力してください！");
+      let embedUrl = "";
+
+      if (input.includes("twitch.tv")) {
+        const channel = input.split("twitch.tv/")[1].split("/")[0];
+        embedUrl = getTwitchEmbed(channel);
+      } else if (input.includes("youtube.com") || input.includes("youtu.be")) {
+        const match = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
+        const videoId = match ? match[1] : null;
+        if (!videoId) return alert("YouTubeのURLが無効です！");
+        embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+      } else {
+        return alert("対応していないURL形式です。");
+      }
+
+      const div = document.createElement("div");
+      div.className = "player";
+      div.innerHTML = `
+        <iframe src="${embedUrl}" allowfullscreen frameborder="0" width="100%" height="100%"></iframe>
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustLayout();">×</button>`;
+      container.appendChild(div);
+      urlInput.value = "";
+      saveState();
+      adjustLayout();
+    }
+
+    function playAll() {
+      container.querySelectorAll("iframe").forEach(f =>
+        f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
+      );
+    }
+
+    function pauseAll() {
+      container.querySelectorAll("iframe").forEach(f =>
+        f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*")
+      );
+    }
+
+    function removeAll() {
+      if (confirm("すべてのプレイヤーを削除しますか？")) {
+        container.innerHTML = "";
+        saveState();
+      }
+    }
+
+    function saveState() {
+      const urls = [...container.querySelectorAll("iframe")].map(f => f.src);
+      localStorage.setItem("players", JSON.stringify(urls));
+    }
+
+    function restoreState() {
+      const saved = JSON.parse(localStorage.getItem("players") || "[]");
+      saved.forEach(src => {
+        const div = document.createElement("div");
+        div.className = "player";
+        div.innerHTML = `
+          <iframe src="${src}" allowfullscreen frameborder="0" width="100%" height="100%"></iframe>
+          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustLayout();">×</button>`;
+        container.appendChild(div);
+      });
+      adjustLayout();
+    }
+
+    async function renderStreamers() {
+      const ytList = document.getElementById("youtubeList");
+      const twList = document.getElementById("twitchList");
+
+      ytList.innerHTML = Object.keys(youtubeChannels)
+        .map(name => `<span onclick="loadYouTube('${youtubeChannels[name]}')">${name}</span>`)
+        .join(" ");
+      twList.innerHTML = twitchStreamers
+        .map(name => `<span onclick="addVideo('https://www.twitch.tv/${name}')">${name}</span>`)
+        .join(" ");
+    }
+
+    async function loadYouTube(channelId) {
+      const videoId = await getYouTubeLiveVideo(channelId);
+      if (videoId) {
+        addVideo(`https://www.youtube.com/watch?v=${videoId}`);
+      } else {
+        alert("現在ライブ配信は行われていません。");
+      }
+    }
+
+    function adjustLayout() {
+      const players = container.querySelectorAll(".player");
+      const count = players.length;
+      players.forEach(player => {
+        if (count <= 1) {
+          player.style.flex = "1 1 96%";
+          player.style.maxWidth = "96%";
+        } else {
+          player.style.flex = "1 1 calc(50% - 12px)";
+          player.style.maxWidth = "calc(50% - 12px)";
+        }
+      });
+    }
+
+    new MutationObserver(adjustLayout).observe(container, { childList: true });
+    new Sortable(container, { animation: 150 });
+    renderStreamers();
+    restoreState();
+  </script>
 </body>
 </html>
