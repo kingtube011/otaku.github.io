@@ -35,25 +35,32 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 4px;
-      padding: 4px;
+      gap: 8px;
+      padding: 10px 2%;
+      box-sizing: border-box;
     }
 
     .player {
-      flex: 1 1 calc(50% - 8px); /* デフォルト2列 */
-      max-width: calc(50% - 8px);
+      flex: 1 1 calc(48% - 8px);
+      max-width: calc(48% - 8px);
       aspect-ratio: 16/9;
       background: #000;
-      border-radius: 8px;
+      border-radius: 10px;
       overflow: hidden;
       position: relative;
       transition: all 0.3s ease;
     }
 
+    iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
     .delete-btn {
       position: absolute;
-      top: 5px;
-      right: 5px;
+      top: 6px;
+      right: 6px;
       background: rgba(255, 0, 0, 0.8);
       border: none;
       border-radius: 50%;
@@ -70,9 +77,11 @@
 
     footer {
       text-align: center;
-      padding: 20px;
+      padding: 25px 5%;
       font-size: 0.9rem;
       color: #bbb;
+      background: #121212;
+      border-top: 1px solid #333;
     }
 
     button {
@@ -82,12 +91,13 @@
       border-radius: 6px;
       color: white;
       cursor: pointer;
+      margin: 4px;
     }
 
     button:hover { background: #e73370; }
 
     .streamer-list {
-      margin: 10px auto;
+      margin: 12px auto;
       max-width: 900px;
       color: #ff80b0;
       font-size: 0.95rem;
@@ -103,6 +113,25 @@
     .streamer-list span:hover {
       color: #fff;
       text-decoration: underline;
+    }
+
+    .about-section {
+      max-width: 900px;
+      margin: 40px auto 20px;
+      padding: 20px;
+      background: #181818;
+      border-radius: 10px;
+      text-align: left;
+      color: #ccc;
+    }
+    .about-section h2 {
+      color: #ff80b0;
+      font-size: 1.2rem;
+      margin-bottom: 10px;
+    }
+    .about-section p {
+      margin-bottom: 10px;
+      line-height: 1.7;
     }
   </style>
 </head>
@@ -127,6 +156,14 @@
   </header>
 
   <div id="playerContainer"></div>
+
+  <div class="about-section">
+    <h2>このサイトの目的・注意事項</h2>
+    <p>このサイトは、YouTubeおよびTwitch配信を同時に視聴するための便利ツールです。複数の推しを同時に追いたい方、配信の比較チェックなどにご利用ください。</p>
+    <p>配信映像は各サービスの公式プレイヤーを利用しており、外部サーバーでの動画保存・再配信は一切行っていません。</p>
+    <p>利用は自己責任でお願いします。通信量が多くなるため、Wi-Fi環境での使用を推奨します。</p>
+    <p>このツールはファン活動支援目的であり、配信者やプラットフォームに損害を与える意図はありません。</p>
+  </div>
 
   <footer>
     <div>サイト運営支援 → <a href="https://paypal.me/otakuplayer486" target="_blank" style="color:#ff4081;">PayPal</a></div>
@@ -187,7 +224,7 @@
       const div = document.createElement("div");
       div.className = "player";
       div.innerHTML = `
-        <iframe src="${embedUrl}" allowfullscreen frameborder="0" width="100%" height="100%"></iframe>
+        <iframe src="${embedUrl}" allowfullscreen></iframe>
         <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustPlayerLayout();">×</button>`;
       container.appendChild(div);
       urlInput.value = "";
@@ -225,7 +262,7 @@
         const div = document.createElement("div");
         div.className = "player";
         div.innerHTML = `
-          <iframe src="${src}" allowfullscreen frameborder="0" width="100%" height="100%"></iframe>
+          <iframe src="${src}" allowfullscreen></iframe>
           <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustPlayerLayout();">×</button>`;
         container.appendChild(div);
       });
@@ -258,23 +295,23 @@
       const count = players.length;
       players.forEach(player => {
         if (count === 1) {
-          player.style.flex = "1 1 100%";
-          player.style.maxWidth = "100%";
+          player.style.flex = "1 1 96%";
+          player.style.maxWidth = "96%";
         } else if (count === 2) {
-          player.style.flex = "1 1 50%";
-          player.style.maxWidth = "50%";
+          player.style.flex = "1 1 48%";
+          player.style.maxWidth = "48%";
         } else if (count === 3) {
-          player.style.flex = "1 1 33%";
-          player.style.maxWidth = "33%";
+          player.style.flex = "1 1 32%";
+          player.style.maxWidth = "32%";
         } else {
-          player.style.flex = "1 1 25%";
-          player.style.maxWidth = "25%";
+          player.style.flex = "1 1 24%";
+          player.style.maxWidth = "24%";
         }
       });
     }
 
     new MutationObserver(adjustPlayerLayout).observe(container, { childList: true });
-    new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
+    new Sortable(container, { animation: 150 });
     renderStreamers();
     restoreState();
   </script>
