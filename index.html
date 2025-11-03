@@ -14,6 +14,7 @@
       margin: 0;
       padding: 0;
       text-align: center;
+      overflow-x: hidden;
     }
 
     header { padding: 20px 10px; }
@@ -35,32 +36,31 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 8px;
-      padding: 10px 2%;
-      box-sizing: border-box;
+      gap: 6px;
+      padding: 8px;
+      margin: 0 auto;
+      max-width: 98vw;
     }
 
     .player {
-      flex: 1 1 calc(48% - 8px);
-      max-width: calc(48% - 8px);
-      aspect-ratio: 16/9;
+      flex: 1 1 calc(50% - 12px); /* 横2列で並ぶ */
+      max-width: calc(50% - 12px);
+      aspect-ratio: 16 / 9;
       background: #000;
-      border-radius: 10px;
+      border-radius: 8px;
       overflow: hidden;
       position: relative;
       transition: all 0.3s ease;
     }
 
-    iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
+    @media (max-width: 1000px) {
+      .player { flex: 1 1 100%; max-width: 100%; }
     }
 
     .delete-btn {
       position: absolute;
-      top: 6px;
-      right: 6px;
+      top: 5px;
+      right: 5px;
       background: rgba(255, 0, 0, 0.8);
       border: none;
       border-radius: 50%;
@@ -72,16 +72,13 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-
     .player:hover .delete-btn { opacity: 1; }
 
     footer {
       text-align: center;
-      padding: 25px 5%;
+      padding: 20px;
       font-size: 0.9rem;
       color: #bbb;
-      background: #121212;
-      border-top: 1px solid #333;
     }
 
     button {
@@ -91,47 +88,45 @@
       border-radius: 6px;
       color: white;
       cursor: pointer;
-      margin: 4px;
     }
-
     button:hover { background: #e73370; }
 
     .streamer-list {
-      margin: 12px auto;
+      margin: 10px auto;
       max-width: 900px;
       color: #ff80b0;
       font-size: 0.95rem;
       line-height: 1.8;
     }
-
     .streamer-list span {
       margin: 0 6px;
       cursor: pointer;
       transition: color 0.2s;
     }
-
     .streamer-list span:hover {
       color: #fff;
       text-decoration: underline;
     }
 
-    .about-section {
-      max-width: 900px;
-      margin: 40px auto 20px;
-      padding: 20px;
-      background: #181818;
-      border-radius: 10px;
-      text-align: left;
-      color: #ccc;
+    #historyContainer {
+      margin-top: 20px;
+      padding: 10px;
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      flex-wrap: wrap;
+      font-size: 0.9rem;
     }
-    .about-section h2 {
-      color: #ff80b0;
-      font-size: 1.2rem;
-      margin-bottom: 10px;
+
+    .history-item {
+      background: #1f1f1f;
+      padding: 6px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      transition: background 0.3s;
     }
-    .about-section p {
-      margin-bottom: 10px;
-      line-height: 1.7;
+    .history-item:hover {
+      background: #ff4081;
     }
   </style>
 </head>
@@ -157,13 +152,7 @@
 
   <div id="playerContainer"></div>
 
-  <div class="about-section">
-    <h2>このサイトの目的・注意事項</h2>
-    <p>このサイトは、YouTubeおよびTwitch配信を同時に視聴するための便利ツールです。複数の推しを同時に追いたい方、配信の比較チェックなどにご利用ください。</p>
-    <p>配信映像は各サービスの公式プレイヤーを利用しており、外部サーバーでの動画保存・再配信は一切行っていません。</p>
-    <p>利用は自己責任でお願いします。通信量が多くなるため、Wi-Fi環境での使用を推奨します。</p>
-    <p>このツールはファン活動支援目的であり、配信者やプラットフォームに損害を与える意図はありません。</p>
-  </div>
+  <div id="historyContainer"></div>
 
   <footer>
     <div>サイト運営支援 → <a href="https://paypal.me/otakuplayer486" target="_blank" style="color:#ff4081;">PayPal</a></div>
@@ -173,7 +162,7 @@
   <script>
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
-
+    const historyContainer = document.getElementById("historyContainer");
     const YT_API_KEY = "AIzaSyCE_ibJnbv6DNMByQEmKM_XLU64oJ11KuE";
 
     const youtubeChannels = {
@@ -204,6 +193,14 @@
       return `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
     }
 
+    let history = JSON.parse(localStorage.getItem("videoHistory") || "[]");
+
+    function renderHistory() {
+      historyContainer.innerHTML = history.map(h =>
+        `<div class="history-item" onclick="addVideo('${h}')">${h.includes("youtube") ? "YouTube" : "Twitch"}再生</div>`
+      ).join("");
+    }
+
     async function addVideo(url = null) {
       let input = url || urlInput.value.trim();
       if (!input) return alert("URLを入力してください！");
@@ -217,19 +214,24 @@
         const videoId = match ? match[1] : null;
         if (!videoId) return alert("YouTubeのURLが無効です！");
         embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
-      } else {
-        return alert("対応していないURL形式です。");
-      }
+      } else return alert("対応していないURL形式です。");
 
       const div = document.createElement("div");
       div.className = "player";
       div.innerHTML = `
-        <iframe src="${embedUrl}" allowfullscreen></iframe>
+        <iframe src="${embedUrl}" allowfullscreen frameborder="0" width="100%" height="100%"></iframe>
         <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustPlayerLayout();">×</button>`;
       container.appendChild(div);
       urlInput.value = "";
       saveState();
       adjustPlayerLayout();
+
+      if (!history.includes(input)) {
+        history.unshift(input);
+        if (history.length > 4) history.pop();
+        localStorage.setItem("videoHistory", JSON.stringify(history));
+        renderHistory();
+      }
     }
 
     function playAll() {
@@ -262,7 +264,7 @@
         const div = document.createElement("div");
         div.className = "player";
         div.innerHTML = `
-          <iframe src="${src}" allowfullscreen></iframe>
+          <iframe src="${src}" allowfullscreen frameborder="0" width="100%" height="100%"></iframe>
           <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustPlayerLayout();">×</button>`;
         container.appendChild(div);
       });
@@ -283,11 +285,8 @@
 
     async function loadYouTube(channelId) {
       const videoId = await getYouTubeLiveVideo(channelId);
-      if (videoId) {
-        addVideo(`https://www.youtube.com/watch?v=${videoId}`);
-      } else {
-        alert("現在ライブ配信は行われていません。");
-      }
+      if (videoId) addVideo(`https://www.youtube.com/watch?v=${videoId}`);
+      else alert("現在ライブ配信は行われていません。");
     }
 
     function adjustPlayerLayout() {
@@ -295,25 +294,26 @@
       const count = players.length;
       players.forEach(player => {
         if (count === 1) {
-          player.style.flex = "1 1 96%";
-          player.style.maxWidth = "96%";
+          player.style.flex = "1 1 98%";
+          player.style.maxWidth = "98%";
         } else if (count === 2) {
-          player.style.flex = "1 1 48%";
-          player.style.maxWidth = "48%";
+          player.style.flex = "1 1 49%";
+          player.style.maxWidth = "49%";
         } else if (count === 3) {
-          player.style.flex = "1 1 32%";
-          player.style.maxWidth = "32%";
+          player.style.flex = "1 1 33%";
+          player.style.maxWidth = "33%";
         } else {
-          player.style.flex = "1 1 24%";
-          player.style.maxWidth = "24%";
+          player.style.flex = "1 1 25%";
+          player.style.maxWidth = "25%";
         }
       });
     }
 
     new MutationObserver(adjustPlayerLayout).observe(container, { childList: true });
-    new Sortable(container, { animation: 150 });
+    new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
     renderStreamers();
     restoreState();
+    renderHistory();
   </script>
 </body>
 </html>
