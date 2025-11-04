@@ -3,8 +3,15 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>このサイトについて | オタク同時再生ツール</title>
-  <meta name="description" content="オタク同時再生ツールの目的・開発背景・利用方法を紹介します。" />
+  <title>このサイトについて | オタク再生ツール</title>
+  <meta name="description" content="オタク再生ツールは、YouTubeやTwitchの複数配信を同時に再生できる無料のWebアプリです。このページでは目的・機能・免責事項を紹介します。" />
+  <meta name="robots" content="index, follow">
+  <meta name="author" content="オタク再生ツール運営チーム" />
+  <meta property="og:title" content="このサイトについて | オタク再生ツール" />
+  <meta property="og:description" content="オタク再生ツールは、YouTube・Twitchの複数配信を同時再生できる便利なWebアプリです。利用目的・免責事項を掲載しています。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://otaku-player.com/about.html" />
+  <meta property="og:site_name" content="オタク再生ツール" />
   <style>
     body {
       font-family: "Noto Sans JP", sans-serif;
@@ -15,39 +22,117 @@
       max-width: 800px;
       margin: auto;
     }
-    h1 { color: #ff4081; }
-    a { color: #ff80b0; text-decoration: none; }
-    a:hover { text-decoration: underline; }
+
+    h1 {
+      color: #ff4081;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    h2 {
+      color: #ff80b0;
+      margin-top: 30px;
+      border-left: 4px solid #ff4081;
+      padding-left: 10px;
+    }
+
+    ul {
+      margin-left: 20px;
+    }
+
+    a {
+      color: #ff80b0;
+      text-decoration: none;
+    }
+
+    a:hover {
+      text-decoration: underline;
+    }
+
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      border-top: 1px solid #333;
+      padding-top: 20px;
+      color: #aaa;
+    }
+
+    footer a {
+      color: #ff80b0;
+      margin: 0 6px;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
   </style>
+
+  <!-- 構造化データ（Google向け） -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "オタク再生ツール",
+    "url": "https://otaku-player.com/",
+    "description": "オタク再生ツールは、YouTubeやTwitchの配信を同時に再生できる無料Webアプリです。",
+    "publisher": {
+      "@type": "Organization",
+      "name": "オタク再生ツール運営",
+      "url": "https://otaku-player.com/"
+    }
+  }
+  </script>
 </head>
 <body>
   <h1>このサイトについて</h1>
+
   <p>
-    「オタク同時再生ツール」は、YouTubeやTwitchで活動する配信者を<br>
-    同時に視聴できるようにする無料のWebアプリです。
+    「オタク再生ツール」は、<strong>YouTube</strong>や<strong>Twitch</strong>で活動する複数の配信者を<br>
+    同時に視聴できるように設計された無料のWebアプリです。<br>
+    配信ファンの「推し配信をまとめて見たい」という声から生まれました。
   </p>
 
   <h2>開発の目的</h2>
   <p>
-    複数の配信を同時に楽しみたいファン向けに、<br>
-    ブラウザ上で簡単に再生できる環境を提供することを目的としています。<br>
-    このサイトは個人による非営利開発であり、公式配信プラットフォームとは関係ありません。
+    本サイトは、配信視聴をより快適に楽しむための環境を提供することを目的としています。<br>
+    公式プラットフォームの埋め込み機能およびAPIを使用しており、<br>
+    違法な動画配信・データ収集などは一切行っていません。<br><br>
+    また、本サイトは非公式のファンツールであり、YouTubeおよびTwitchの運営会社とは関係ありません。
   </p>
 
-  <h2>機能の概要</h2>
+  <h2>主な機能</h2>
   <ul>
-    <li>YouTube・Twitchの配信を同時再生</li>
-    <li>配信URLを保存・再生履歴管理</li>
-    <li>配信者のライブ情報をワンクリックで確認</li>
+    <li>YouTube・Twitchのライブ配信を同時再生</li>
+    <li>配信URLの保存と再生履歴機能</li>
+    <li>ワンクリックで配信者のライブ状況をチェック</li>
+    <li>プレイヤーの自動レイアウト調整（2画面まで横並び対応）</li>
   </ul>
+
+  <h2>利用上の注意</h2>
+  <p>
+    当サイトは閲覧支援ツールであり、各配信プラットフォームのAPI利用規約に準拠しています。<br>
+    動画・音声などの著作権は、すべて各配信者またはプラットフォーム運営元に帰属します。<br>
+    不具合や障害が発生した場合も、配信元の都合により再生できないことがあります。
+  </p>
 
   <h2>免責事項</h2>
   <p>
-    このサイトで再生される配信映像は、各配信プラットフォームの利用規約に基づき埋め込まれています。<br>
-    配信内容や著作権等に関する一切の責任は、各配信元に帰属します。
+    当サイトを利用したことによって発生したトラブル・損害・不利益について、運営者は一切の責任を負いません。<br>
+    また、掲載内容は予告なく変更・削除される場合があります。
   </p>
 
-  <p><a href="index.html">← メインページに戻る</a></p>
+  <h2>お問い合わせ</h2>
+  <p>
+    ご意見・ご要望・不具合報告などがある場合は、<br>
+    <a href="contact.html">お問い合わせフォーム</a>よりご連絡ください。
+  </p>
+
+  <footer>
+    <div>
+      <a href="index.html">トップページ</a>｜
+      <a href="privacy.html">プライバシーポリシー</a>｜
+      <a href="terms.html">利用規約</a>
+    </div>
+  </footer>
 </body>
 </html>
-
