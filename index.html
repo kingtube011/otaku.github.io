@@ -4,8 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-adsense-account" content="ca-pub-1233665276169336">
-  <meta name="description" content="オタク再生ツールは、YouTubeとTwitchのライブ配信を同時再生できる無料ツールです。好きな配信者を複数並べて楽しもう！">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336" crossorigin="anonymous"></script>
+  <meta name="description" content="オタク再生ツールは、YouTubeとTwitchのライブ配信を同時再生できる無料ツールです。">
   <title>オタク再生ツール</title>
   <style>
     body {
@@ -15,7 +14,7 @@
       margin: 0;
       padding: 0;
       text-align: center;
-      overflow-x: hidden;
+      overflow: hidden; /* スクロール禁止 */
     }
 
     header { padding: 20px 10px; }
@@ -37,14 +36,17 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      gap: 8px;
-      padding: 8px 2%;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 2%;
       box-sizing: border-box;
+      height: 100vh; /* 常に全画面 */
     }
 
     .player {
-      flex: 1 1 calc(48%);
+      flex: 1 1 48%;
       max-width: 48%;
+      height: 48%;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
@@ -55,7 +57,8 @@
     iframe {
       width: 100%;
       height: 100%;
-      display: block;
+      border: none;
+      object-fit: cover; /* 黒帯防止 */
     }
 
     .delete-btn {
@@ -76,11 +79,15 @@
 
     .player:hover .delete-btn { opacity: 1; }
 
-    button {
-      padding: 10px 15px;
-      background: #ff4081;
-      border: none;
+    input, button {
+      padding: 10px;
       border-radius: 6px;
+      border: none;
+      margin: 4px;
+    }
+
+    button {
+      background: #ff4081;
       color: white;
       cursor: pointer;
     }
@@ -99,15 +106,13 @@
       cursor: pointer;
       transition: color 0.2s;
     }
-
-    .streamer-list span:hover {
-      color: #fff;
-      text-decoration: underline;
-    }
+    .streamer-list span:hover { color: #fff; text-decoration: underline; }
 
     footer {
+      position: absolute;
+      bottom: 5px;
+      width: 100%;
       text-align: center;
-      padding: 30px 10px;
       font-size: 0.9rem;
       color: #bbb;
     }
@@ -119,17 +124,10 @@
 
     footer a:hover { text-decoration: underline; }
 
-    section {
-      max-width: 850px;
-      margin: 40px auto;
-      padding: 0 20px;
-      text-align: left;
-      color: #ddd;
-      line-height: 1.8;
-    }
-
     @media (max-width: 768px) {
-      .player { flex: 1 1 100%; max-width: 100%; }
+      #playerContainer { flex-direction: column; height: auto; }
+      .player { flex: 1 1 100%; max-width: 100%; height: 45vh; }
+      body { overflow: auto; }
     }
   </style>
 </head>
@@ -140,14 +138,13 @@
       <a href="https://www.youtube.com" target="_blank" class="yt-btn">YouTubeへ</a>
       <a href="https://www.twitch.tv" target="_blank" class="twitch-btn">Twitchへ</a>
     </div>
-
     <p>YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。</p>
 
-    <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" style="width:60%;padding:10px;border-radius:6px;">
+    <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" style="width:60%;">
     <button onclick="addVideo()">追加</button>
     <button onclick="playAll()">▶ 同時再生</button>
-    <button onclick="pauseAll()">⏸ 一括一時停止</button>
-    <button onclick="removeAll()" style="background:#b00020;">🗑 すべて削除</button>
+    <button onclick="pauseAll()">⏸ 一時停止</button>
+    <button onclick="removeAll()" style="background:#b00020;">🗑 全削除</button>
 
     <div class="streamer-list" id="youtubeList"></div>
     <div class="streamer-list" id="twitchList"></div>
@@ -155,114 +152,60 @@
 
   <div id="playerContainer"></div>
 
-  <section>
-    <h2>オタク再生ツールとは？</h2>
-    <p>
-      オタク再生ツールは、YouTubeとTwitchの配信を同時に再生できる無料のウェブアプリです。
-      配信者のライブを複数ウィンドウで見比べたり、コラボ配信を同時視聴することができます。
-    </p>
-
-    <h3>主な機能</h3>
-    <ul>
-      <li>🎬 YouTube・TwitchのURLを入力するだけで再生可能</li>
-      <li>⏯ 一括再生・一時停止ボタンで一斉操作</li>
-      <li>🧩 プレイヤーのドラッグ移動・削除機能付き</li>
-      <li>💾 自動保存機能で、次回アクセス時も続きから再開</li>
-    </ul>
-
-    <h3>ご利用上の注意</h3>
-    <p>
-      本ツールはYouTube・Twitchの公式埋め込み機能を使用しています。
-      動画コンテンツの著作権は各配信者・プラットフォームに帰属します。
-      本サイトは配信者への応援や利便性向上を目的としており、動画の収益化・転載は行いません。
-    </p>
-  </section>
-
   <footer>
-    <div>
-      <a href="about.html">このサイトについて</a>｜
-      <a href="privacy.html">プライバシーポリシー</a>｜
-      <a href="terms.html">利用規約</a>｜
-      <a href="contact.html">お問い合わせ</a>
-    </div>
-    <div>サイト運営支援 → <a href="https://paypal.me/otakuplayer486" target="_blank">PayPal</a></div>
+    <a href="about.html">このサイトについて</a>｜
+    <a href="privacy.html">プライバシーポリシー</a>｜
+    <a href="terms.html">利用規約</a>｜
+    <a href="contact.html">お問い合わせ</a>
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
 
+    const getTwitchEmbed = ch => `https://player.twitch.tv/?channel=${ch}&parent=${location.hostname}`;
     const YT_API_KEY = "AIzaSyCE_ibJnbv6DNMByQEmKM_XLU64oJ11KuE";
-
-    const youtubeChannels = {
-      "葛葉": "UCSFCh5NL4qXrAy9u-u2lX3g",
-      "叶": "UCspv01oxUFf_MTSipURRhkA",
-      "渋谷ハル": "UCV1xUwfM2v2oBtT3JNvic3w",
-      "一ノ瀬うるは": "UCiMG6VdScBabPhJ1ZtaVmbw",
-      "橘ひなの": "UCvUc0m317LWTTPZoBQV479A",
-      "小森めと": "UCzUNASdzI4PV5SlqtYwAkKQ"
-    };
-
-    const twitchStreamers = [
-      "fps_shaka", "k4sen", "spygea", "obormentv", "vodkavdk",
-      "kenki", "akamikarubi", "tororo_vtuber", "sasatikk"
-    ];
-
-    async function getYouTubeLiveVideo(channelId) {
-      const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${YT_API_KEY}`;
-      const res = await fetch(apiUrl);
-      const data = await res.json();
-      if (data.items && data.items.length > 0) return data.items[0].id.videoId;
-      return null;
-    }
-
-    function getTwitchEmbed(channel) {
-      return `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
-    }
 
     async function addVideo(url = null) {
       let input = url || urlInput.value.trim();
-      if (!input) return alert("URLを入力してください！");
+      if (!input) return alert("URLを入力してください");
       let embedUrl = "";
 
       if (input.includes("twitch.tv")) {
-        const channel = input.split("twitch.tv/")[1].split("/")[0];
-        embedUrl = getTwitchEmbed(channel);
+        const ch = input.split("twitch.tv/")[1].split("/")[0];
+        embedUrl = getTwitchEmbed(ch);
       } else if (input.includes("youtube.com") || input.includes("youtu.be")) {
-        const match = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
-        const videoId = match ? match[1] : null;
-        if (!videoId) return alert("YouTubeのURLが無効です！");
-        embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
-      } else {
-        return alert("対応していないURL形式です。");
-      }
+        const match = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]+)/);
+        const id = match ? match[1] : null;
+        if (!id) return alert("無効なYouTube URLです");
+        embedUrl = `https://www.youtube.com/embed/${id}?enablejsapi=1`;
+      } else return alert("対応していないURL形式です");
 
       const div = document.createElement("div");
       div.className = "player";
       div.innerHTML = `
-        <iframe src="${embedUrl}" allowfullscreen frameborder="0"></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustPlayerLayout();">×</button>`;
+        <iframe src="${embedUrl}" allowfullscreen></iframe>
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustLayout();">×</button>`;
       container.appendChild(div);
       urlInput.value = "";
       saveState();
-      adjustPlayerLayout();
+      adjustLayout();
     }
 
     function playAll() {
-      container.querySelectorAll("iframe").forEach(f =>
+      document.querySelectorAll("iframe").forEach(f =>
         f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
       );
     }
 
     function pauseAll() {
-      container.querySelectorAll("iframe").forEach(f =>
+      document.querySelectorAll("iframe").forEach(f =>
         f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*")
       );
     }
 
     function removeAll() {
-      if (confirm("すべてのプレイヤーを削除しますか？")) {
+      if (confirm("全てのプレイヤーを削除しますか？")) {
         container.innerHTML = "";
         saveState();
       }
@@ -279,51 +222,24 @@
         const div = document.createElement("div");
         div.className = "player";
         div.innerHTML = `
-          <iframe src="${src}" allowfullscreen frameborder="0"></iframe>
-          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustPlayerLayout();">×</button>`;
+          <iframe src="${src}" allowfullscreen></iframe>
+          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustLayout();">×</button>`;
         container.appendChild(div);
       });
-      adjustPlayerLayout();
+      adjustLayout();
     }
 
-    async function renderStreamers() {
-      const ytList = document.getElementById("youtubeList");
-      const twList = document.getElementById("twitchList");
-
-      ytList.innerHTML = Object.keys(youtubeChannels)
-        .map(name => `<span onclick="loadYouTube('${youtubeChannels[name]}')">${name}</span>`)
-        .join(" ");
-      twList.innerHTML = twitchStreamers
-        .map(name => `<span onclick="addVideo('https://www.twitch.tv/${name}')">${name}</span>`)
-        .join(" ");
+    function adjustLayout() {
+      const count = container.children.length;
+      if (count <= 1) {
+        container.style.flexDirection = "column";
+      } else {
+        container.style.flexDirection = "row";
+        container.style.flexWrap = "wrap";
+      }
     }
 
-    async function loadYouTube(channelId) {
-      const videoId = await getYouTubeLiveVideo(channelId);
-      if (videoId) addVideo(`https://www.youtube.com/watch?v=${videoId}`);
-      else alert("現在ライブ配信は行われていません。");
-    }
-
-    function adjustPlayerLayout() {
-      const players = container.querySelectorAll(".player");
-      const count = players.length;
-      if (!count) return;
-
-      const rows = Math.ceil(count / 2);
-      const availableHeight = window.innerHeight * 0.8;
-      const playerHeight = availableHeight / rows - 8;
-
-      players.forEach(player => {
-        player.style.flex = count <= 1 ? "1 1 96%" : "1 1 48%";
-        player.style.maxWidth = count <= 1 ? "96%" : "48%";
-        player.style.height = `${playerHeight}px`;
-      });
-    }
-
-    window.addEventListener("resize", adjustPlayerLayout);
-    new MutationObserver(adjustPlayerLayout).observe(container, { childList: true });
-    new Sortable(container, { animation: 150 });
-    renderStreamers();
+    window.addEventListener("resize", adjustLayout);
     restoreState();
   </script>
 </body>
