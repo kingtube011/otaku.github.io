@@ -12,10 +12,10 @@
       background: #0e0e0e;
       color: #f0f0f0;
       font-family: "Noto Sans JP", sans-serif;
-      overflow-x: hidden;
+      overflow: hidden; /* ← スクロール禁止 */
     }
 
-    /* 🎬 ハンバーガーメニュー */
+    /* 🍔 ハンバーガーメニュー */
     .menu-button {
       position: fixed;
       top: 15px;
@@ -29,7 +29,6 @@
       transition: 0.3s;
     }
     .menu-button:hover { background: rgba(255, 255, 255, 0.3); }
-
     .menu-button span {
       display: block;
       width: 22px;
@@ -40,7 +39,7 @@
       transition: all 0.3s;
     }
 
-    /* 📋 メニュースライドパネル */
+    /* 📋 メニュースライド */
     .menu-panel {
       position: fixed;
       top: 0;
@@ -53,10 +52,9 @@
       padding: 30px;
       transition: right 0.4s ease;
       z-index: 999;
+      box-sizing: border-box;
     }
-    .menu-panel.active {
-      right: 0;
-    }
+    .menu-panel.active { right: 0; }
 
     .menu-panel h1 {
       color: #ff80b0;
@@ -93,24 +91,28 @@
     }
     .menu-panel a:hover { text-decoration: underline; }
 
-    /* 🎥 プレイヤー配置 */
+    /* 🎥 プレイヤー */
     #playerContainer {
-      display: flex;
-      flex-wrap: wrap;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      display: grid;
       justify-content: center;
-      gap: 8px;
-      padding: 10px 2%;
+      align-content: center;
+      gap: 6px;
+      padding: 8px 2%;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
     }
 
     .player {
       position: relative;
-      flex: 1 1 calc(48%);
-      max-width: 48%;
-      aspect-ratio: 16/9;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
-      transition: transform 0.3s ease;
+      transition: all 0.3s ease;
     }
 
     iframe {
@@ -120,7 +122,6 @@
       display: block;
     }
 
-    /* 🎯 削除ボタン */
     .delete-btn {
       position: absolute;
       top: 5px;
@@ -138,11 +139,10 @@
     }
     .player:hover .delete-btn { opacity: 1; }
 
-    /* 🔁 並べ替えハンドル */
     .drag-handle {
       position: absolute;
-      top: -12px;
-      left: -12px;
+      top: -10px;
+      left: -10px;
       width: 24px;
       height: 24px;
       background: rgba(255, 255, 255, 0.15);
@@ -155,14 +155,13 @@
     .player:hover .drag-handle { opacity: 1; }
 
     @media (max-width: 768px) {
-      .player { flex: 1 1 100%; max-width: 100%; }
       .menu-panel { width: 80%; }
     }
   </style>
 </head>
 
 <body>
-  <!-- 🍔 ハンバーガーボタン -->
+  <!-- 🍔 ハンバーガー -->
   <button class="menu-button" onclick="toggleMenu()">
     <span></span><span></span><span></span>
   </button>
@@ -221,10 +220,28 @@
       div.innerHTML = `
         <div class="drag-handle"></div>
         <iframe src="${embedUrl}" allowfullscreen></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>`;
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustLayout();">×</button>`;
       container.appendChild(div);
       urlInput.value = "";
       saveState();
+      adjustLayout();
+    }
+
+    function adjustLayout() {
+      const players = container.querySelectorAll(".player");
+      const count = players.length;
+      if (count === 0) return;
+
+      const cols = Math.ceil(Math.sqrt(count)); // 自動列数
+      const rows = Math.ceil(count / cols);
+
+      container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
+
+      players.forEach(p => {
+        p.style.width = "100%";
+        p.style.height = "100%";
+      });
     }
 
     function playAll() {
@@ -259,15 +276,16 @@
         div.innerHTML = `
           <div class="drag-handle"></div>
           <iframe src="${src}" allowfullscreen></iframe>
-          <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>`;
+          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustLayout();">×</button>`;
         container.appendChild(div);
       });
+      adjustLayout();
     }
 
     new Sortable(container, {
       animation: 200,
       handle: ".drag-handle",
-      onEnd: saveState
+      onEnd: () => { saveState(); adjustLayout(); }
     });
 
     restoreState();
