@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>オタク再生ツール</title>
-  <meta name="description" content="YouTubeとTwitchの配信を同時再生できるオタク再生ツール。URLを入力して複数の配信を同時視聴！">
+  <meta name="description" content="オタク再生ツールは、YouTubeとTwitchの配信を同時再生できる無料Webアプリです。好きな配信を複数並べて同時視聴！">
   <style>
     body {
       margin: 0;
@@ -14,7 +14,7 @@
       overflow: hidden;
     }
 
-    /* === メニュー === */
+    /* ==== メニュー ==== */
     #menuButton {
       position: fixed;
       top: 15px;
@@ -30,6 +30,7 @@
       z-index: 1000;
       transition: background 0.2s;
     }
+
     #menuButton:hover {
       background: #444;
     }
@@ -38,21 +39,24 @@
       position: fixed;
       top: 15px;
       right: 70px;
-      background: rgba(20,20,20,0.95);
+      background: rgba(20,20,20,0.96);
       border-radius: 12px;
-      padding: 15px 20px;
+      padding: 18px 22px;
       display: none;
       flex-direction: column;
       gap: 10px;
       z-index: 999;
-      box-shadow: 0 0 20px rgba(0,0,0,0.4);
+      box-shadow: 0 0 20px rgba(0,0,0,0.5);
+      width: 260px;
     }
 
     #menuPanel input {
       padding: 10px;
       border: none;
       border-radius: 6px;
-      width: 250px;
+      width: 100%;
+      background: #111;
+      color: #fff;
     }
 
     #menuPanel button {
@@ -62,23 +66,40 @@
       background: #ff4081;
       color: #fff;
       cursor: pointer;
+      width: 100%;
+      transition: 0.2s;
     }
 
     #menuPanel button:hover {
       background: #e73370;
     }
 
-    /* === プレイヤー全体 === */
-    #playerContainer {
+    #menuLinks {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 8px;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 10px;
+      font-size: 0.9em;
+    }
+
+    #menuLinks a {
+      color: #ff80b0;
+      text-decoration: none;
+    }
+
+    #menuLinks a:hover {
+      text-decoration: underline;
+    }
+
+    /* ==== プレイヤー配置 ==== */
+    #playerContainer {
+      display: grid;
+      place-items: center;
       width: 100vw;
       height: 100vh;
-      padding: 8px;
+      gap: 8px;
       box-sizing: border-box;
+      padding: 8px;
     }
 
     .player {
@@ -86,9 +107,7 @@
       background: #000;
       border-radius: 8px;
       overflow: hidden;
-      aspect-ratio: 16 / 9;
-      flex: 1 1 48%;
-      max-width: 48%;
+      aspect-ratio: 16/9;
       transition: all 0.3s ease;
     }
 
@@ -96,9 +115,10 @@
       width: 100%;
       height: 100%;
       border: none;
+      object-fit: contain;
     }
 
-    /* 削除ボタン */
+    /* ==== ボタン類 ==== */
     .delete-btn {
       position: absolute;
       top: 6px;
@@ -119,7 +139,6 @@
       opacity: 1;
     }
 
-    /* 入れ替えボタン（非表示→ホバーで出現） */
     .move-btn {
       position: absolute;
       bottom: 6px;
@@ -141,12 +160,9 @@
     }
 
     @media (max-width: 768px) {
-      .player {
-        flex: 1 1 100%;
-        max-width: 100%;
-      }
       #menuPanel {
         right: 10px;
+        width: 200px;
       }
     }
   </style>
@@ -154,13 +170,19 @@
 <body>
   <button id="menuButton">☰</button>
   <div id="menuPanel">
-    <h3>オタク再生ツール</h3>
+    <h3>🎬 オタク再生ツール</h3>
     <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力">
     <button onclick="addVideo()">追加</button>
     <button onclick="playAll()">▶ 同時再生</button>
-    <button onclick="pauseAll()">⏸ 一括一時停止</button>
+    <button onclick="pauseAll()">⏸ 一時停止</button>
     <button onclick="removeAll()" style="background:#b00020;">🗑 全削除</button>
-    <p style="font-size:0.9em; color:#ccc;">🎬 プレイヤーはドラッグして順番を入れ替え可能です。</p>
+    <div id="menuLinks">
+      <a href="about.html">このサイトについて</a>
+      <a href="privacy.html">プライバシーポリシー</a>
+      <a href="terms.html">利用規約</a>
+      <a href="contact.html">お問い合わせ</a>
+    </div>
+    <p style="font-size:0.8em;color:#bbb;">プレイヤーはドラッグで入れ替え可能です。</p>
   </div>
 
   <div id="playerContainer"></div>
@@ -173,6 +195,7 @@
     document.getElementById("menuButton").onclick = () => {
       const menu = document.getElementById("menuPanel");
       menu.style.display = (menu.style.display === "flex") ? "none" : "flex";
+      menu.style.flexDirection = "column";
     };
 
     function getTwitchEmbed(channel) {
@@ -249,34 +272,29 @@
     }
 
     function adjustLayout() {
-      const players = container.querySelectorAll(".player");
-      const count = players.length;
+      const count = container.childElementCount;
       if (count === 0) return;
 
-      const widthMap = {
-        1: "96%",
-        2: "48%",
-        3: "48%",
-        4: "48%",
-        5: "31%",
-        6: "31%",
-        7: "31%",
-        8: "24%",
-        9: "24%"
-      };
+      // 各プレイヤーを画面に均等に配置
+      const gridCols = Math.ceil(Math.sqrt(count));
+      const gridRows = Math.ceil(count / gridCols);
 
-      players.forEach(p => {
-        p.style.flex = `1 1 ${widthMap[count] || "31%"}`;
-        p.style.maxWidth = widthMap[count] || "31%";
+      container.style.gridTemplateColumns = `repeat(${gridCols}, 1fr)`;
+      container.style.gridTemplateRows = `repeat(${gridRows}, 1fr)`;
+
+      // 高さ調整で上下が切れないように
+      const vh = window.innerHeight;
+      const padding = 20;
+      const maxHeight = (vh - padding * (gridRows + 1)) / gridRows;
+      const width = maxHeight * (16 / 9);
+
+      document.querySelectorAll(".player").forEach(p => {
+        p.style.width = `${width}px`;
+        p.style.height = `${maxHeight}px`;
       });
-
-      if (count % 2 === 1 && count > 1) {
-        players[count - 1].style.margin = "0 auto";
-        players[count - 1].style.display = "block";
-      }
     }
 
-    new MutationObserver(adjustLayout).observe(container, { childList: true });
+    window.addEventListener("resize", adjustLayout);
     new Sortable(container, { animation: 150, ghostClass: "sortable-ghost", handle: ".move-btn" });
 
     restoreState();
