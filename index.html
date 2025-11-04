@@ -81,28 +81,25 @@
     }
     .player-wrapper:hover .delete-btn { opacity: 1; }
 
-    /* 🔢 並び替え番号ボタン */
+    /* 🔘 並び替え用ボタン（左上・非表示） */
     .order-btn {
       position: absolute;
-      bottom: -16px;
-      right: -16px;
+      top: -16px;
+      left: -16px;
       background: #ff4081;
       border: none;
       border-radius: 50%;
-      color: white;
-      width: 32px;
-      height: 32px;
-      font-weight: bold;
+      width: 28px;
+      height: 28px;
       cursor: grab;
-      font-size: 14px;
-      user-select: none;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
-      transition: all 0.2s ease;
-      z-index: 10;
+      opacity: 0;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
-    .order-btn:hover {
-      transform: scale(1.15);
-      box-shadow: 0 0 10px rgba(255, 64, 129, 0.6);
+    .player-wrapper:hover .order-btn {
+      opacity: 1;
+      transform: scale(1.1);
+      box-shadow: 0 0 10px rgba(255,64,129,0.6);
     }
 
     button {
@@ -164,12 +161,18 @@
       <a href="https://www.youtube.com" target="_blank" class="yt-btn">YouTubeへ</a>
       <a href="https://www.twitch.tv" target="_blank" class="twitch-btn">Twitchへ</a>
     </div>
-    <p>YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。</p>
+
+    <p>
+      YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。<br>
+      🎯 プレイヤーはドラッグ＆ドロップで好きな位置に並べ替えできます。
+    </p>
+
     <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" style="width:60%;padding:10px;border-radius:6px;">
     <button onclick="addVideo()">追加</button>
     <button onclick="playAll()">▶ 同時再生</button>
     <button onclick="pauseAll()">⏸ 一括一時停止</button>
     <button onclick="removeAll()" style="background:#b00020;">🗑 すべて削除</button>
+
     <div class="streamer-list" id="youtubeList"></div>
     <div class="streamer-list" id="twitchList"></div>
   </header>
@@ -240,13 +243,12 @@
       div.className = "player-wrapper";
       div.innerHTML = `
         <iframe src="${embedUrl}" allowfullscreen></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateOrderLabels();">×</button>
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>
         <button class="order-btn"></button>
       `;
       container.appendChild(div);
       urlInput.value = "";
       saveState();
-      updateOrderLabels();
     }
 
     function playAll() {
@@ -280,17 +282,10 @@
         div.className = "player-wrapper";
         div.innerHTML = `
           <iframe src="${src}" allowfullscreen></iframe>
-          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateOrderLabels();">×</button>
+          <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>
           <button class="order-btn"></button>
         `;
         container.appendChild(div);
-      });
-      updateOrderLabels();
-    }
-
-    function updateOrderLabels() {
-      [...container.querySelectorAll(".order-btn")].forEach((btn, i) => {
-        btn.textContent = i + 1;
       });
     }
 
@@ -314,11 +309,9 @@
 
     new Sortable(container, {
       animation: 150,
+      handle: ".order-btn", // 並び替えハンドル指定
       ghostClass: "sortable-ghost",
-      onEnd: () => {
-        saveState();
-        updateOrderLabels();
-      }
+      onEnd: saveState
     });
 
     renderStreamers();
