@@ -42,14 +42,19 @@
       align-items: center;
     }
 
+    .player-wrapper {
+      position: relative;
+      display: inline-block;
+      width: 95%;
+      margin: auto;
+    }
+
     .player {
       position: relative;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
       aspect-ratio: 16 / 9;
-      width: 95%; /* ✅ 全体比で少し小さく */
-      margin: auto;
       transition: transform 0.2s ease, box-shadow 0.2s ease;
       cursor: grab;
     }
@@ -84,6 +89,27 @@
     }
     .player:hover .delete-btn { opacity: 1; }
 
+    .order-btn {
+      position: absolute;
+      top: -28px;
+      right: 5px;
+      background: #ff4081;
+      border: none;
+      border-radius: 50%;
+      color: white;
+      width: 28px;
+      height: 28px;
+      font-weight: bold;
+      cursor: grab;
+      font-size: 14px;
+      user-select: none;
+      box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
+      transition: transform 0.2s;
+    }
+    .order-btn:hover {
+      transform: scale(1.1);
+    }
+
     .streamer-list {
       margin: 10px auto;
       max-width: 900px;
@@ -115,6 +141,10 @@
     @media (max-width: 768px) {
       #playerContainer {
         grid-template-columns: 1fr;
+      }
+      .order-btn {
+        top: -24px;
+        right: 0;
       }
     }
   </style>
@@ -151,7 +181,6 @@
     <div>サイト運営支援 → <a href="https://paypal.me/otakuplayer486" target="_blank">PayPal</a></div>
   </footer>
 
-  <!-- Sortable.js -->
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
     const container = document.getElementById("playerContainer");
@@ -220,14 +249,24 @@
         return alert("対応していないURL形式です。");
       }
 
-      const div = document.createElement("div");
-      div.className = "player";
-      div.innerHTML = `
-        <iframe src="${embedUrl}" allowfullscreen></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>`;
-      container.appendChild(div);
+      const wrapper = document.createElement("div");
+      wrapper.className = "player-wrapper";
+      wrapper.innerHTML = `
+        <button class="order-btn">#</button>
+        <div class="player">
+          <iframe src="${embedUrl}" allowfullscreen></iframe>
+          <button class="delete-btn" onclick="this.parentElement.parentElement.remove(); saveState(); updateOrderNumbers();">×</button>
+        </div>`;
+      container.appendChild(wrapper);
       urlInput.value = "";
       saveState();
+      updateOrderNumbers();
+    }
+
+    function updateOrderNumbers() {
+      [...container.querySelectorAll(".order-btn")].forEach((btn, i) => {
+        btn.textContent = i + 1;
+      });
     }
 
     function playAll() {
@@ -257,20 +296,27 @@
     function restoreState() {
       const saved = JSON.parse(localStorage.getItem("players") || "[]");
       saved.forEach(src => {
-        const div = document.createElement("div");
-        div.className = "player";
-        div.innerHTML = `
-          <iframe src="${src}" allowfullscreen></iframe>
-          <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>`;
-        container.appendChild(div);
+        const wrapper = document.createElement("div");
+        wrapper.className = "player-wrapper";
+        wrapper.innerHTML = `
+          <button class="order-btn">#</button>
+          <div class="player">
+            <iframe src="${src}" allowfullscreen></iframe>
+            <button class="delete-btn" onclick="this.parentElement.parentElement.remove(); saveState(); updateOrderNumbers();">×</button>
+          </div>`;
+        container.appendChild(wrapper);
       });
+      updateOrderNumbers();
     }
 
-    // Sortable.js によるドラッグ＆スナップ機能
+    // Sortable.jsによるスナップ付きドラッグ入れ替え
     new Sortable(container, {
       animation: 200,
       ghostClass: "sortable-ghost",
-      onEnd: saveState
+      onEnd: () => {
+        saveState();
+        updateOrderNumbers();
+      }
     });
 
     renderStreamers();
