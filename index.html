@@ -36,17 +36,19 @@
     #playerContainer {
       display: grid;
       grid-template-columns: repeat(2, 1fr);
-      gap: 6px;
-      padding: 6px 2%;
+      gap: 8px;
+      padding: 8px 2%;
+      justify-content: center;
     }
 
     .player {
       position: relative;
       background: #000;
-      border-radius: 6px;
+      border-radius: 8px;
       overflow: hidden;
-      aspect-ratio: 16 / 9; /* ✅ 正しい比率維持 */
-      width: 100%;
+      aspect-ratio: 16 / 9;
+      width: 95%; /* ✅ 5％縮小 */
+      margin: auto;
       transition: all 0.3s ease;
     }
 
@@ -54,6 +56,7 @@
       width: 100%;
       height: 100%;
       border: none;
+      display: block;
     }
 
     .delete-btn {
@@ -72,6 +75,25 @@
       transition: opacity 0.3s;
     }
     .player:hover .delete-btn { opacity: 1; }
+
+    .streamer-list {
+      margin: 10px auto;
+      max-width: 900px;
+      color: #ff80b0;
+      font-size: 0.95rem;
+      line-height: 1.8;
+    }
+
+    .streamer-list span {
+      margin: 0 6px;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+
+    .streamer-list span:hover {
+      color: #fff;
+      text-decoration: underline;
+    }
 
     footer {
       text-align: center;
@@ -101,6 +123,7 @@
     </div>
 
     <p>YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。</p>
+
     <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" style="width:60%;padding:10px;border-radius:6px;">
     <button onclick="addVideo()">追加</button>
     <button onclick="playAll()">▶ 同時再生</button>
@@ -117,6 +140,9 @@
       <option value="3x3">3 × 3</option>
       <option value="4x3">4 × 3</option>
     </select>
+
+    <div class="streamer-list" id="youtubeList"></div>
+    <div class="streamer-list" id="twitchList"></div>
   </header>
 
   <div id="playerContainer"></div>
@@ -135,20 +161,59 @@
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
 
-    const layoutPresets = {
-      "2x1": { columns: 2, rows: 1 },
-      "2x2": { columns: 2, rows: 2 },
-      "3x2": { columns: 3, rows: 2 },
-      "3x3": { columns: 3, rows: 3 },
-      "4x3": { columns: 4, rows: 3 }
+    const YT_API_KEY = "AIzaSyCE_ibJnbv6DNMByQEmKM_XLU64oJ11KuE";
+
+    const youtubeChannels = {
+      "葛葉": "UCSFCh5NL4qXrAy9u-u2lX3g",
+      "叶": "UCspv01oxUFf_MTSipURRhkA",
+      "渋谷ハル": "UCV1xUwfM2v2oBtT3JNvic3w",
+      "一ノ瀬うるは": "UCiMG6VdScBabPhJ1ZtaVmbw",
+      "橘ひなの": "UCvUc0m317LWTTPZoBQV479A",
+      "小森めと": "UCzUNASdzI4PV5SlqtYwAkKQ"
     };
+
+    const twitchStreamers = [
+      "fps_shaka", "k4sen", "spygea", "obormentv", "vodkavdk",
+      "kenki", "akamikarubi", "tororo_vtuber", "sasatikk"
+    ];
+
+    async function getYouTubeLiveVideo(channelId) {
+      const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${YT_API_KEY}`;
+      const res = await fetch(apiUrl);
+      const data = await res.json();
+      if (data.items && data.items.length > 0) return data.items[0].id.videoId;
+      return null;
+    }
+
+    function getTwitchEmbed(channel) {
+      return `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
+    }
+
+    async function renderStreamers() {
+      const ytList = document.getElementById("youtubeList");
+      const twList = document.getElementById("twitchList");
+
+      ytList.innerHTML = Object.keys(youtubeChannels)
+        .map(name => `<span onclick="loadYouTube('${youtubeChannels[name]}')">${name}</span>`)
+        .join(" ");
+
+      twList.innerHTML = twitchStreamers
+        .map(name => `<span onclick="addVideo('https://www.twitch.tv/${name}')">${name}</span>`)
+        .join(" ");
+    }
+
+    async function loadYouTube(channelId) {
+      const videoId = await getYouTubeLiveVideo(channelId);
+      if (videoId) addVideo(`https://www.youtube.com/watch?v=${videoId}`);
+      else alert("現在ライブ配信は行われていません。");
+    }
 
     function applyLayoutPreset(name) {
       if (name === "auto") return adjustPlayerLayout();
-      const preset = layoutPresets[name];
-      if (preset) {
-        container.style.gridTemplateColumns = `repeat(${preset.columns}, 1fr)`;
-      }
+      const layout = {
+        "2x1": 2, "2x2": 2, "3x2": 3, "3x3": 3, "4x3": 4
+      }[name] || 2;
+      container.style.gridTemplateColumns = `repeat(${layout}, 1fr)`;
     }
 
     function adjustPlayerLayout() {
@@ -170,7 +235,7 @@
 
       if (input.includes("twitch.tv")) {
         const channel = input.split("twitch.tv/")[1].split("/")[0];
-        embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
+        embedUrl = getTwitchEmbed(channel);
       } else if (input.includes("youtube.com") || input.includes("youtu.be")) {
         const match = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
         const videoId = match ? match[1] : null;
@@ -229,6 +294,7 @@
     }
 
     new MutationObserver(adjustPlayerLayout).observe(container, { childList: true });
+    renderStreamers();
     restoreState();
   </script>
 </body>
