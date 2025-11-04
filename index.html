@@ -15,12 +15,17 @@
       overflow: hidden;
     }
 
-    /* モダンなハンバーガーメニュー */
-    #menuButton {
+    /* 🎛 メニュー全体 */
+    #menuWrapper {
       position: fixed;
-      top: 15px;
-      right: 20px;
-      background: rgba(40, 40, 40, 0.9);
+      top: 10px;
+      right: 15px;
+      z-index: 1000;
+    }
+
+    /* ☰ボタン */
+    #menuButton {
+      background: rgba(50, 50, 50, 0.5);
       border: none;
       border-radius: 6px;
       width: 42px;
@@ -28,30 +33,35 @@
       color: #fff;
       font-size: 22px;
       cursor: pointer;
-      z-index: 1000;
       display: flex;
       align-items: center;
       justify-content: center;
+      opacity: 0;
+      transition: opacity 0.4s, background 0.3s;
+    }
+    #menuWrapper:hover #menuButton {
+      opacity: 1;
+      background: rgba(50, 50, 50, 0.8);
     }
 
+    /* 🪟メニューパネル */
     #menuPanel {
-      position: fixed;
-      top: 70px;
-      right: 20px;
+      position: absolute;
+      top: 50px;
+      right: 0;
       background: rgba(30, 30, 30, 0.95);
       border-radius: 10px;
-      padding: 20px;
+      padding: 15px;
       display: none;
       flex-direction: column;
       gap: 10px;
       box-shadow: 0 4px 20px rgba(0,0,0,0.6);
-      z-index: 999;
+      min-width: 270px;
     }
-
     #menuPanel.show { display: flex; }
 
     #menuPanel input {
-      width: 250px;
+      width: 100%;
       padding: 8px;
       border-radius: 6px;
       border: none;
@@ -73,30 +83,24 @@
       color: white;
       cursor: pointer;
     }
-
     #menuPanel button:hover { background: #e73370; }
+
     #menuPanel a {
       background: #333;
       color: #ff80b0;
     }
     #menuPanel a:hover { background: #444; }
 
+    /* 🎬 プレイヤー配置 */
     #playerContainer {
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      flex-wrap: wrap;
       justify-content: center;
+      align-items: center;
       height: 100vh;
-      overflow: hidden;
+      gap: 10px;
       padding: 10px;
       box-sizing: border-box;
-    }
-
-    .playerRow {
-      display: flex;
-      justify-content: center;
-      width: 100%;
-      gap: 10px;
     }
 
     .player {
@@ -105,8 +109,9 @@
       overflow: hidden;
       position: relative;
       aspect-ratio: 16/9;
-      flex: 1 1 auto;
       transition: transform 0.3s;
+      flex: 1 1 calc(45%);
+      max-width: 45%;
     }
 
     iframe {
@@ -115,6 +120,7 @@
       display: block;
     }
 
+    /* ❌削除ボタン */
     .delete-btn {
       position: absolute;
       top: 6px;
@@ -132,6 +138,7 @@
     }
     .player:hover .delete-btn { opacity: 1; }
 
+    /* ↕移動ボタン */
     .move-btn {
       position: absolute;
       bottom: 6px;
@@ -149,18 +156,20 @@
   </style>
 </head>
 <body>
-  <button id="menuButton">☰</button>
-
-  <div id="menuPanel">
-    <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力">
-    <button onclick="addVideo()">追加</button>
-    <button onclick="playAll()">▶ 同時再生</button>
-    <button onclick="pauseAll()">⏸ 一時停止</button>
-    <button onclick="removeAll()" style="background:#b00020;">🗑 全削除</button>
-    <a href="about.html">このサイトについて</a>
-    <a href="privacy.html">プライバシーポリシー</a>
-    <a href="terms.html">利用規約</a>
-    <a href="contact.html">お問い合わせ</a>
+  <!-- 🎛 メニュー全体をhover検知エリアに -->
+  <div id="menuWrapper">
+    <button id="menuButton">☰</button>
+    <div id="menuPanel">
+      <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力">
+      <button onclick="addVideo()">追加</button>
+      <button onclick="playAll()">▶ 同時再生</button>
+      <button onclick="pauseAll()">⏸ 一時停止</button>
+      <button onclick="removeAll()" style="background:#b00020;">🗑 全削除</button>
+      <a href="about.html">このサイトについて</a>
+      <a href="privacy.html">プライバシーポリシー</a>
+      <a href="terms.html">利用規約</a>
+      <a href="contact.html">お問い合わせ</a>
+    </div>
   </div>
 
   <div id="playerContainer"></div>
@@ -169,22 +178,18 @@
   <script>
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
-    const menuButton = document.getElementById("menuButton");
+    const menuWrapper = document.getElementById("menuWrapper");
     const menuPanel = document.getElementById("menuPanel");
 
-    menuButton.addEventListener("click", () => {
-      menuPanel.classList.toggle("show");
+    // 🪄 Hoverでメニュー表示
+    menuWrapper.addEventListener("mouseenter", () => {
+      menuPanel.classList.add("show");
+    });
+    menuWrapper.addEventListener("mouseleave", () => {
+      menuPanel.classList.remove("show");
     });
 
     const YT_API_KEY = "AIzaSyCE_ibJnbv6DNMByQEmKM_XLU64oJ11KuE";
-
-    async function getYouTubeLiveVideo(channelId) {
-      const apiUrl = `https://www.googleapis.com/youtube/v3/search?part=snippet&channelId=${channelId}&eventType=live&type=video&key=${YT_API_KEY}`;
-      const res = await fetch(apiUrl);
-      const data = await res.json();
-      if (data.items && data.items.length > 0) return data.items[0].id.videoId;
-      return null;
-    }
 
     function getTwitchEmbed(channel) {
       return `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
@@ -211,12 +216,12 @@
       div.className = "player";
       div.innerHTML = `
         <iframe src="${embedUrl}" allowfullscreen frameborder="0"></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateLayout();">×</button>
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>
         <button class="move-btn" title="ドラッグで移動可能"></button>`;
       container.appendChild(div);
       urlInput.value = "";
       saveState();
-      updateLayout();
+      adjustLayout();
     }
 
     function saveState() {
@@ -231,11 +236,11 @@
         div.className = "player";
         div.innerHTML = `
           <iframe src="${src}" allowfullscreen frameborder="0"></iframe>
-          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateLayout();">×</button>
+          <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>
           <button class="move-btn" title="ドラッグで移動可能"></button>`;
         container.appendChild(div);
       });
-      updateLayout();
+      adjustLayout();
     }
 
     function removeAll() {
@@ -257,45 +262,24 @@
       );
     }
 
-    function updateLayout() {
-      const players = [...container.querySelectorAll(".player")];
+    function adjustLayout() {
+      const players = container.querySelectorAll(".player");
       const count = players.length;
-      container.innerHTML = "";
 
-      // 段ごとの行数計算（逆ピラミッド）
-      const layout = [];
-      let remaining = count;
-      let rowSize = 2;
+      let width = 45;
+      if (count >= 3) width = 30;
+      if (count >= 5) width = 22;
+      if (count >= 7) width = 18;
 
-      while (remaining > 0) {
-        const row = Math.min(rowSize, remaining);
-        layout.push(row);
-        remaining -= row;
-        if (remaining > 0 && remaining < rowSize) rowSize = remaining; // 最後に中央1段を残す
-      }
-
-      layout.forEach((cols, i) => {
-        const row = document.createElement("div");
-        row.className = "playerRow";
-        row.style.justifyContent = cols < layout[0] ? "center" : "space-evenly";
-        for (let j = 0; j < cols; j++) {
-          const player = players.shift();
-          row.appendChild(player);
+      players.forEach((p, i) => {
+        p.style.flex = `1 1 ${width}%`;
+        p.style.maxWidth = `${width}%`;
+        if (count % 2 !== 0 && i === count - 1) {
+          p.style.margin = "0 auto";
+          p.style.display = "block";
+        } else {
+          p.style.margin = "0";
         }
-        container.appendChild(row);
-      });
-
-      adjustSizes();
-    }
-
-    function adjustSizes() {
-      const rows = container.querySelectorAll(".playerRow");
-      const rowCount = rows.length;
-      const height = 100 / rowCount - 2;
-      rows.forEach(row => {
-        row.querySelectorAll(".player").forEach(p => {
-          p.style.height = `${height}vh`;
-        });
       });
     }
 
@@ -303,10 +287,7 @@
       animation: 150,
       ghostClass: "sortable-ghost",
       handle: ".move-btn",
-      onEnd: () => {
-        saveState();
-        updateLayout();
-      }
+      onEnd: () => saveState(),
     });
 
     restoreState();
