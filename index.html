@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="google-adsense-account" content="ca-pub-1233665276169336">
   <meta name="description" content="オタク再生ツールは、YouTubeとTwitchのライブ配信を同時再生できる無料ツールです。好きな配信者を複数並べて楽しもう！">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336" crossorigin="anonymous"></script>
   <title>オタク再生ツール</title>
   <style>
     body {
@@ -17,8 +16,14 @@
       text-align: center;
     }
 
-    header { padding: 20px 10px; }
-    h1 { margin-bottom: 5px; font-size: 1.8rem; }
+    header {
+      padding: 20px 10px;
+    }
+
+    h1 {
+      margin-bottom: 5px;
+      font-size: 1.8rem;
+    }
 
     .top-buttons a {
       display: inline-block;
@@ -34,44 +39,31 @@
     .twitch-btn { background-color: #9146ff; }
 
     #playerContainer {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(45%, 1fr));
-      gap: 10px;
-      padding: 10px 2%;
+      display: flex;
+      flex-wrap: wrap;
       justify-content: center;
-      align-items: center;
+      gap: 8px;
+      padding: 8px 2%;
     }
 
     .player-wrapper {
       position: relative;
-      display: inline-block;
-      width: 95%;
-      margin: auto;
-    }
-
-    .player {
-      position: relative;
+      flex: 1 1 calc(48%);
+      max-width: 48%;
+      aspect-ratio: 16/9;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
-      aspect-ratio: 16 / 9;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
-      cursor: grab;
-    }
-
-    .player:active {
-      cursor: grabbing;
-      transform: scale(0.98);
-      box-shadow: 0 0 15px rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease;
     }
 
     iframe {
       width: 100%;
       height: 100%;
       border: none;
-      display: block;
     }
 
+    /* ✖ 削除ボタン */
     .delete-btn {
       position: absolute;
       top: 5px;
@@ -87,28 +79,41 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-    .player:hover .delete-btn { opacity: 1; }
+    .player-wrapper:hover .delete-btn { opacity: 1; }
 
+    /* 🔢 並び替え番号ボタン */
     .order-btn {
       position: absolute;
-      top: -28px;
-      right: 5px;
+      bottom: -16px;
+      right: -16px;
       background: #ff4081;
       border: none;
       border-radius: 50%;
       color: white;
-      width: 28px;
-      height: 28px;
+      width: 32px;
+      height: 32px;
       font-weight: bold;
       cursor: grab;
       font-size: 14px;
       user-select: none;
-      box-shadow: 0 0 4px rgba(255, 255, 255, 0.4);
-      transition: transform 0.2s;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+      transition: all 0.2s ease;
+      z-index: 10;
     }
     .order-btn:hover {
-      transform: scale(1.1);
+      transform: scale(1.15);
+      box-shadow: 0 0 10px rgba(255, 64, 129, 0.6);
     }
+
+    button {
+      padding: 10px 15px;
+      background: #ff4081;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      cursor: pointer;
+    }
+    button:hover { background: #e73370; }
 
     .streamer-list {
       margin: 10px auto;
@@ -123,7 +128,6 @@
       cursor: pointer;
       transition: color 0.2s;
     }
-
     .streamer-list span:hover {
       color: #fff;
       text-decoration: underline;
@@ -135,16 +139,20 @@
       font-size: 0.9rem;
       color: #bbb;
     }
-    footer a { color: #ff80b0; text-decoration: none; }
-    footer a:hover { text-decoration: underline; }
+
+    footer a {
+      color: #ff80b0;
+      text-decoration: none;
+    }
+
+    footer a:hover {
+      text-decoration: underline;
+    }
 
     @media (max-width: 768px) {
-      #playerContainer {
-        grid-template-columns: 1fr;
-      }
-      .order-btn {
-        top: -24px;
-        right: 0;
+      .player-wrapper {
+        flex: 1 1 100%;
+        max-width: 100%;
       }
     }
   </style>
@@ -156,15 +164,12 @@
       <a href="https://www.youtube.com" target="_blank" class="yt-btn">YouTubeへ</a>
       <a href="https://www.twitch.tv" target="_blank" class="twitch-btn">Twitchへ</a>
     </div>
-
     <p>YouTube・Twitch対応。URLを入力して同時再生・一時停止ができます。</p>
-
     <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" style="width:60%;padding:10px;border-radius:6px;">
     <button onclick="addVideo()">追加</button>
     <button onclick="playAll()">▶ 同時再生</button>
     <button onclick="pauseAll()">⏸ 一括一時停止</button>
     <button onclick="removeAll()" style="background:#b00020;">🗑 すべて削除</button>
-
     <div class="streamer-list" id="youtubeList"></div>
     <div class="streamer-list" id="twitchList"></div>
   </header>
@@ -185,6 +190,7 @@
   <script>
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
+
     const YT_API_KEY = "AIzaSyCE_ibJnbv6DNMByQEmKM_XLU64oJ11KuE";
 
     const youtubeChannels = {
@@ -213,26 +219,7 @@
       return `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
     }
 
-    async function renderStreamers() {
-      const ytList = document.getElementById("youtubeList");
-      const twList = document.getElementById("twitchList");
-
-      ytList.innerHTML = Object.keys(youtubeChannels)
-        .map(name => `<span onclick="loadYouTube('${youtubeChannels[name]}')">${name}</span>`)
-        .join(" ");
-
-      twList.innerHTML = twitchStreamers
-        .map(name => `<span onclick="addVideo('https://www.twitch.tv/${name}')">${name}</span>`)
-        .join(" ");
-    }
-
-    async function loadYouTube(channelId) {
-      const videoId = await getYouTubeLiveVideo(channelId);
-      if (videoId) addVideo(`https://www.youtube.com/watch?v=${videoId}`);
-      else alert("現在ライブ配信は行われていません。");
-    }
-
-    function addVideo(url = null) {
+    async function addVideo(url = null) {
       let input = url || urlInput.value.trim();
       if (!input) return alert("URLを入力してください！");
       let embedUrl = "";
@@ -249,24 +236,17 @@
         return alert("対応していないURL形式です。");
       }
 
-      const wrapper = document.createElement("div");
-      wrapper.className = "player-wrapper";
-      wrapper.innerHTML = `
-        <button class="order-btn">#</button>
-        <div class="player">
-          <iframe src="${embedUrl}" allowfullscreen></iframe>
-          <button class="delete-btn" onclick="this.parentElement.parentElement.remove(); saveState(); updateOrderNumbers();">×</button>
-        </div>`;
-      container.appendChild(wrapper);
+      const div = document.createElement("div");
+      div.className = "player-wrapper";
+      div.innerHTML = `
+        <iframe src="${embedUrl}" allowfullscreen></iframe>
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateOrderLabels();">×</button>
+        <button class="order-btn"></button>
+      `;
+      container.appendChild(div);
       urlInput.value = "";
       saveState();
-      updateOrderNumbers();
-    }
-
-    function updateOrderNumbers() {
-      [...container.querySelectorAll(".order-btn")].forEach((btn, i) => {
-        btn.textContent = i + 1;
-      });
+      updateOrderLabels();
     }
 
     function playAll() {
@@ -296,26 +276,48 @@
     function restoreState() {
       const saved = JSON.parse(localStorage.getItem("players") || "[]");
       saved.forEach(src => {
-        const wrapper = document.createElement("div");
-        wrapper.className = "player-wrapper";
-        wrapper.innerHTML = `
-          <button class="order-btn">#</button>
-          <div class="player">
-            <iframe src="${src}" allowfullscreen></iframe>
-            <button class="delete-btn" onclick="this.parentElement.parentElement.remove(); saveState(); updateOrderNumbers();">×</button>
-          </div>`;
-        container.appendChild(wrapper);
+        const div = document.createElement("div");
+        div.className = "player-wrapper";
+        div.innerHTML = `
+          <iframe src="${src}" allowfullscreen></iframe>
+          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateOrderLabels();">×</button>
+          <button class="order-btn"></button>
+        `;
+        container.appendChild(div);
       });
-      updateOrderNumbers();
+      updateOrderLabels();
     }
 
-    // Sortable.jsによるスナップ付きドラッグ入れ替え
+    function updateOrderLabels() {
+      [...container.querySelectorAll(".order-btn")].forEach((btn, i) => {
+        btn.textContent = i + 1;
+      });
+    }
+
+    async function renderStreamers() {
+      const ytList = document.getElementById("youtubeList");
+      const twList = document.getElementById("twitchList");
+
+      ytList.innerHTML = Object.keys(youtubeChannels)
+        .map(name => `<span onclick="loadYouTube('${youtubeChannels[name]}')">${name}</span>`)
+        .join(" ");
+      twList.innerHTML = twitchStreamers
+        .map(name => `<span onclick="addVideo('https://www.twitch.tv/${name}')">${name}</span>`)
+        .join(" ");
+    }
+
+    async function loadYouTube(channelId) {
+      const videoId = await getYouTubeLiveVideo(channelId);
+      if (videoId) addVideo(`https://www.youtube.com/watch?v=${videoId}`);
+      else alert("現在ライブ配信は行われていません。");
+    }
+
     new Sortable(container, {
-      animation: 200,
+      animation: 150,
       ghostClass: "sortable-ghost",
       onEnd: () => {
         saveState();
-        updateOrderNumbers();
+        updateOrderLabels();
       }
     });
 
