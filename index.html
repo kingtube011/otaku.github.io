@@ -1,9 +1,8 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="google-adsense-account" content="ca-pub-1233665276169336">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>オタク再生ツール</title>
   <meta name="description" content="オタク再生ツールは、YouTubeとTwitchのライブ配信を同時再生できる無料ツールです。">
   <style>
@@ -12,10 +11,10 @@
       background: #0e0e0e;
       color: #f0f0f0;
       font-family: "Noto Sans JP", sans-serif;
-      overflow: hidden; /* ← スクロール禁止 */
+      overflow: hidden;
     }
 
-    /* 🍔 ハンバーガーメニュー */
+    /* 🍔 メニュー */
     .menu-button {
       position: fixed;
       top: 15px;
@@ -28,7 +27,6 @@
       z-index: 1000;
       transition: 0.3s;
     }
-    .menu-button:hover { background: rgba(255, 255, 255, 0.3); }
     .menu-button span {
       display: block;
       width: 22px;
@@ -36,10 +34,8 @@
       background: white;
       margin: 4px 0;
       border-radius: 2px;
-      transition: all 0.3s;
     }
 
-    /* 📋 メニュースライド */
     .menu-panel {
       position: fixed;
       top: 0;
@@ -89,19 +85,16 @@
       margin: 10px 0;
       text-decoration: none;
     }
-    .menu-panel a:hover { text-decoration: underline; }
 
-    /* 🎥 プレイヤー */
+    /* 🎬 プレイヤー */
     #playerContainer {
-      position: fixed;
-      top: 0;
-      left: 0;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
+      gap: 8px;
       width: 100vw;
       height: 100vh;
-      display: grid;
-      justify-content: center;
-      align-content: center;
-      gap: 6px;
       padding: 8px 2%;
       box-sizing: border-box;
       transition: all 0.3s ease;
@@ -137,6 +130,7 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
+
     .player:hover .delete-btn { opacity: 1; }
 
     .drag-handle {
@@ -152,14 +146,10 @@
       opacity: 0;
       transition: opacity 0.3s;
     }
-    .player:hover .drag-handle { opacity: 1; }
 
-    @media (max-width: 768px) {
-      .menu-panel { width: 80%; }
-    }
+    .player:hover .drag-handle { opacity: 1; }
   </style>
 </head>
-
 <body>
   <!-- 🍔 ハンバーガー -->
   <button class="menu-button" onclick="toggleMenu()">
@@ -169,7 +159,7 @@
   <!-- 📋 メニュー -->
   <div class="menu-panel" id="menuPanel">
     <h1>🎬 オタク再生ツール</h1>
-    <p>YouTube・Twitch対応。<br>URLを入力して同時再生・一時停止ができます。<br><br>🎯 プレイヤーをドラッグで入れ替え可能です。</p>
+    <p>YouTube・Twitch対応。<br>URLを入力して同時再生・一時停止ができます。<br>🎯 プレイヤーはドラッグで移動可能。</p>
     <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力">
     <button onclick="addVideo()">追加</button>
     <button onclick="playAll()">▶ 同時再生</button>
@@ -182,7 +172,6 @@
     <a href="contact.html">お問い合わせ</a>
   </div>
 
-  <!-- 🎥 プレイヤーコンテナ -->
   <div id="playerContainer"></div>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
@@ -195,10 +184,10 @@
     }
 
     function getTwitchEmbed(channel) {
-      return `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
+      return `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}&muted=false`;
     }
 
-    async function addVideo(url = null) {
+    function addVideo(url = null) {
       let input = url || urlInput.value.trim();
       if (!input) return alert("URLを入力してください！");
       let embedUrl = "";
@@ -210,7 +199,7 @@
         const match = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
         const videoId = match ? match[1] : null;
         if (!videoId) return alert("YouTubeのURLが無効です！");
-        embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+        embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1&mute=0`;
       } else {
         return alert("対応していないURL形式です。");
       }
@@ -219,7 +208,7 @@
       div.className = "player";
       div.innerHTML = `
         <div class="drag-handle"></div>
-        <iframe src="${embedUrl}" allowfullscreen></iframe>
+        <iframe src="${embedUrl}" allow="autoplay; fullscreen"></iframe>
         <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustLayout();">×</button>`;
       container.appendChild(div);
       urlInput.value = "";
@@ -232,16 +221,24 @@
       const count = players.length;
       if (count === 0) return;
 
-      const cols = Math.ceil(Math.sqrt(count)); // 自動列数
-      const rows = Math.ceil(count / cols);
-
-      container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
-      container.style.gridTemplateRows = `repeat(${rows}, 1fr)`;
-
-      players.forEach(p => {
-        p.style.width = "100%";
-        p.style.height = "100%";
-      });
+      // グリッド構成を逆ピラミッド寄せで設定
+      container.style.display = "grid";
+      if (count === 1) {
+        container.style.gridTemplateColumns = "1fr";
+      } else if (count === 2) {
+        container.style.gridTemplateColumns = "1fr 1fr";
+      } else if (count === 3) {
+        container.style.gridTemplateColumns = "1fr 1fr";
+        players[2].style.gridColumn = "1 / span 2"; // 中央1つ
+      } else if (count === 4) {
+        container.style.gridTemplateColumns = "1fr 1fr";
+      } else if (count === 5) {
+        container.style.gridTemplateColumns = "1fr 1fr";
+        players[4].style.gridColumn = "1 / span 2";
+      } else {
+        const cols = Math.ceil(Math.sqrt(count));
+        container.style.gridTemplateColumns = `repeat(${cols}, 1fr)`;
+      }
     }
 
     function playAll() {
@@ -275,7 +272,7 @@
         div.className = "player";
         div.innerHTML = `
           <div class="drag-handle"></div>
-          <iframe src="${src}" allowfullscreen></iframe>
+          <iframe src="${src}" allow="autoplay; fullscreen"></iframe>
           <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustLayout();">×</button>`;
         container.appendChild(div);
       });
