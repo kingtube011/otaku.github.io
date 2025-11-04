@@ -45,7 +45,6 @@
     .player {
       flex: 1 1 calc(48%);
       max-width: 48%;
-      aspect-ratio: 16/9;
       background: #000;
       border-radius: 8px;
       overflow: hidden;
@@ -118,9 +117,7 @@
       text-decoration: none;
     }
 
-    footer a:hover {
-      text-decoration: underline;
-    }
+    footer a:hover { text-decoration: underline; }
 
     section {
       max-width: 850px;
@@ -310,11 +307,11 @@
     function adjustPlayerLayout() {
       const players = container.querySelectorAll(".player");
       const count = players.length;
+      if (!count) return;
 
-      // 動的に高さを調整
-      const availableHeight = window.innerHeight * 0.8; // ヘッダー分の余裕
-      let rows = Math.ceil(count / 3);
-      const playerHeight = availableHeight / rows - 10;
+      const rows = Math.ceil(count / 2);
+      const availableHeight = window.innerHeight * 0.8;
+      const playerHeight = availableHeight / rows - 8;
 
       players.forEach(player => {
         player.style.flex = count <= 1 ? "1 1 96%" : "1 1 48%";
@@ -325,7 +322,7 @@
 
     window.addEventListener("resize", adjustPlayerLayout);
     new MutationObserver(adjustPlayerLayout).observe(container, { childList: true });
-    new Sortable(container, { animation: 150, ghostClass: "sortable-ghost" });
+    new Sortable(container, { animation: 150 });
     renderStreamers();
     restoreState();
   </script>
