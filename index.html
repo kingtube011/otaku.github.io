@@ -15,6 +15,7 @@
       overflow: hidden;
     }
 
+    /* モダンなハンバーガーメニュー */
     #menuButton {
       position: fixed;
       top: 15px;
@@ -82,13 +83,20 @@
 
     #playerContainer {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
+      flex-direction: column;
       align-items: center;
+      justify-content: center;
       height: 100vh;
-      gap: 10px;
+      overflow: hidden;
       padding: 10px;
       box-sizing: border-box;
+    }
+
+    .playerRow {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+      gap: 10px;
     }
 
     .player {
@@ -97,9 +105,8 @@
       overflow: hidden;
       position: relative;
       aspect-ratio: 16/9;
+      flex: 1 1 auto;
       transition: transform 0.3s;
-      flex: 1 1 calc(45%);
-      max-width: 45%;
     }
 
     iframe {
@@ -204,12 +211,12 @@
       div.className = "player";
       div.innerHTML = `
         <iframe src="${embedUrl}" allowfullscreen frameborder="0"></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateLayout();">×</button>
         <button class="move-btn" title="ドラッグで移動可能"></button>`;
       container.appendChild(div);
       urlInput.value = "";
       saveState();
-      adjustLayout();
+      updateLayout();
     }
 
     function saveState() {
@@ -224,11 +231,11 @@
         div.className = "player";
         div.innerHTML = `
           <iframe src="${src}" allowfullscreen frameborder="0"></iframe>
-          <button class="delete-btn" onclick="this.parentElement.remove(); saveState();">×</button>
+          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateLayout();">×</button>
           <button class="move-btn" title="ドラッグで移動可能"></button>`;
         container.appendChild(div);
       });
-      adjustLayout();
+      updateLayout();
     }
 
     function removeAll() {
@@ -250,27 +257,45 @@
       );
     }
 
-    function adjustLayout() {
-      const players = container.querySelectorAll(".player");
+    function updateLayout() {
+      const players = [...container.querySelectorAll(".player")];
       const count = players.length;
+      container.innerHTML = "";
 
-      // 各プレイヤーの大きさをウィンドウ比で調整
-      let width = 45;
-      if (count >= 3) width = 30;
-      if (count >= 5) width = 22;
-      if (count >= 7) width = 18;
+      // 段ごとの行数計算（逆ピラミッド）
+      const layout = [];
+      let remaining = count;
+      let rowSize = 2;
 
-      players.forEach((p, i) => {
-        p.style.flex = `1 1 ${width}%`;
-        p.style.maxWidth = `${width}%`;
+      while (remaining > 0) {
+        const row = Math.min(rowSize, remaining);
+        layout.push(row);
+        remaining -= row;
+        if (remaining > 0 && remaining < rowSize) rowSize = remaining; // 最後に中央1段を残す
+      }
 
-        // ピラミッド風センタリング
-        if (count % 2 !== 0 && i === count - 1) {
-          p.style.margin = "0 auto";
-          p.style.display = "block";
-        } else {
-          p.style.margin = "0";
+      layout.forEach((cols, i) => {
+        const row = document.createElement("div");
+        row.className = "playerRow";
+        row.style.justifyContent = cols < layout[0] ? "center" : "space-evenly";
+        for (let j = 0; j < cols; j++) {
+          const player = players.shift();
+          row.appendChild(player);
         }
+        container.appendChild(row);
+      });
+
+      adjustSizes();
+    }
+
+    function adjustSizes() {
+      const rows = container.querySelectorAll(".playerRow");
+      const rowCount = rows.length;
+      const height = 100 / rowCount - 2;
+      rows.forEach(row => {
+        row.querySelectorAll(".player").forEach(p => {
+          p.style.height = `${height}vh`;
+        });
       });
     }
 
@@ -278,7 +303,10 @@
       animation: 150,
       ghostClass: "sortable-ghost",
       handle: ".move-btn",
-      onEnd: () => saveState(),
+      onEnd: () => {
+        saveState();
+        updateLayout();
+      }
     });
 
     restoreState();
