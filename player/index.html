@@ -39,28 +39,33 @@
     .menu {
       position: fixed;
       top: 0;
-      right: -220px;
-      width: 200px;
+      right: -240px;
+      width: 220px;
       height: 100%;
-      background: rgba(15, 15, 15, 0.95);
+      background: rgba(15, 15, 15, 0.96);
       box-shadow: -2px 0 8px rgba(0, 0, 0, 0.5);
       display: flex;
       flex-direction: column;
-      padding: 60px 15px;
+      padding: 70px 18px;
       transition: right 0.4s ease;
       z-index: 1000;
     }
     .menu.open { right: 0; }
-    .menu a {
+    .menu a, .menu button {
       color: #fff;
       text-decoration: none;
       font-weight: bold;
-      padding: 8px 0;
+      padding: 10px 0;
       width: 100%;
+      border: none;
+      background: none;
+      text-align: left;
       border-bottom: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      font-size: 15px;
       transition: color 0.2s;
     }
-    .menu a:hover { color: #ff80b0; }
+    .menu a:hover, .menu button:hover { color: #ff80b0; }
 
     /* ===== プレイヤー配置 ===== */
     #playerContainer {
@@ -106,24 +111,6 @@
       z-index: 100;
     }
     .player:hover .delete-btn { display: block; }
-
-    /* ===== 追加ボタン ===== */
-    .add-button {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #ff80b0;
-      border: none;
-      border-radius: 50%;
-      width: 60px;
-      height: 60px;
-      font-size: 36px;
-      color: white;
-      cursor: pointer;
-      z-index: 1002;
-      transition: transform 0.2s;
-    }
-    .add-button:hover { transform: scale(1.1); }
 
     /* ===== モーダル ===== */
     .modal {
@@ -178,13 +165,11 @@
     <a href="../privacy.html">🔒 プライバシーポリシー</a>
     <a href="../terms.html">📜 利用規約</a>
     <a href="../contact.html">✉️ お問い合わせ</a>
+    <button id="openAddModal">🎥 動画を追加</button>
   </div>
 
   <!-- プレイヤー -->
   <div id="playerContainer"></div>
-
-  <!-- ＋ボタン -->
-  <button class="add-button" id="addBtn">＋</button>
 
   <!-- モーダル -->
   <div class="modal" id="modal">
@@ -202,7 +187,7 @@
     const container = document.getElementById("playerContainer");
     const menu = document.getElementById("menu");
     const menuBtn = document.getElementById("menuBtn");
-    const addBtn = document.getElementById("addBtn");
+    const openAddModal = document.getElementById("openAddModal");
     const modal = document.getElementById("modal");
     const confirmAdd = document.getElementById("confirmAdd");
     const cancelAdd = document.getElementById("cancelAdd");
@@ -216,7 +201,10 @@
     });
 
     // モーダル操作
-    addBtn.onclick = () => modal.classList.add("open");
+    openAddModal.onclick = () => {
+      modal.classList.add("open");
+      menu.classList.remove("open");
+    };
     cancelAdd.onclick = () => { modal.classList.remove("open"); inputUrl.value = ""; };
     confirmAdd.onclick = () => {
       const url = inputUrl.value.trim();
