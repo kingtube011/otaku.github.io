@@ -13,37 +13,70 @@
       overflow: hidden;
     }
 
-    /* メニュー */
-    .menu {
+    /* ===== ハンバーガーメニュー ===== */
+    .menu-button {
       position: fixed;
       top: 15px;
       right: 15px;
-      background: rgba(20, 20, 20, 0.9);
+      background: rgba(255, 255, 255, 0.1);
+      border: none;
       border-radius: 8px;
-      padding: 10px;
-      opacity: 0.15;
-      transition: opacity 0.3s;
+      padding: 10px 12px;
+      cursor: pointer;
+      z-index: 1001;
+      transition: background 0.3s;
+    }
+
+    .menu-button:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    .menu-button div {
+      width: 25px;
+      height: 3px;
+      background: #fff;
+      margin: 5px 0;
+      border-radius: 2px;
+      transition: all 0.3s;
+    }
+
+    /* メニュー本体 */
+    .menu {
+      position: fixed;
+      top: 0;
+      right: -220px;
+      width: 200px;
+      height: 100%;
+      background: rgba(15, 15, 15, 0.95);
+      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.5);
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: flex-start;
+      padding: 60px 15px;
+      transition: right 0.4s ease;
       z-index: 1000;
     }
 
-    .menu:hover { opacity: 1; }
-
-    .menu a {
-      display: block;
-      color: #fff;
-      text-decoration: none;
-      padding: 6px 12px;
-      border-radius: 5px;
-      font-weight: bold;
-      font-size: 0.9rem;
-      margin-bottom: 4px;
-      background: #222;
-      transition: background 0.2s;
+    .menu.open {
+      right: 0;
     }
 
-    .menu a:hover { background: #444; }
+    .menu a {
+      color: #fff;
+      text-decoration: none;
+      font-weight: bold;
+      padding: 8px 0;
+      width: 100%;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      transition: color 0.2s;
+    }
 
-    /* プレイヤー配置 */
+    .menu a:hover {
+      color: #ff80b0;
+    }
+
+    /* ===== プレイヤー配置 ===== */
     #playerContainer {
       display: flex;
       flex-direction: column;
@@ -98,8 +131,15 @@
   </style>
 </head>
 <body>
+  <!-- 三本線ボタン -->
+  <button class="menu-button" id="menuBtn">
+    <div></div>
+    <div></div>
+    <div></div>
+  </button>
+
   <!-- メニュー -->
-  <div class="menu">
+  <div class="menu" id="menu">
     <a href="../index.html">🏠 トップへ戻る</a>
     <a href="../about.html">📄 このサイトについて</a>
     <a href="../privacy.html">🔒 プライバシーポリシー</a>
@@ -107,12 +147,25 @@
     <a href="../contact.html">✉️ お問い合わせ</a>
   </div>
 
-  <!-- プレイヤー -->
+  <!-- プレイヤーコンテナ -->
   <div id="playerContainer"></div>
 
   <script>
     const container = document.getElementById("playerContainer");
+    const menu = document.getElementById("menu");
+    const menuBtn = document.getElementById("menuBtn");
 
+    // === メニュー操作 ===
+    menuBtn.addEventListener("click", () => {
+      menu.classList.toggle("open");
+    });
+    document.addEventListener("click", e => {
+      if (!menu.contains(e.target) && !menuBtn.contains(e.target)) {
+        menu.classList.remove("open");
+      }
+    });
+
+    // === プレイヤー関係 ===
     function restoreState() {
       const saved = JSON.parse(localStorage.getItem("players") || "[]");
       saved.forEach(src => addPlayer(src));
@@ -139,7 +192,6 @@
       container.innerHTML = "";
       if (players.length === 0) return;
 
-      // 逆ピラミッド配置の行を作成
       const rows = [];
       if (players.length <= 2) rows.push(players);
       else if (players.length === 3) rows.push(players.slice(0, 2), [players[2]]);
@@ -149,9 +201,8 @@
       else if (players.length === 7) rows.push(players.slice(0, 2), players.slice(2, 4), players.slice(4, 6), [players[6]]);
       else rows.push(players);
 
-      // サイズ計算：画面全体にフィット
       const totalRows = rows.length;
-      const heightPerRow = 100 / totalRows - 2; // 少し余白
+      const heightPerRow = 100 / totalRows - 2;
       rows.forEach(r => {
         const rowDiv = document.createElement("div");
         rowDiv.className = "row";
