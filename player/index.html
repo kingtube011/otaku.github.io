@@ -1,102 +1,57 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="オタク再生ツールは、YouTubeとTwitchのライブ配信を同時に再生できる無料ツールです。複数の配信者を並べて推し活を楽しめます。">
-  <meta name="google-adsense-account" content="ca-pub-1233665276169336">
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336" crossorigin="anonymous"></script>
-  <title>オタク再生ツール | 同時再生で推し活サポート</title>
+  <title>オタク再生ツール</title>
   <style>
     body {
       background: #0e0e0e;
       color: #f0f0f0;
       font-family: "Noto Sans JP", sans-serif;
       margin: 0;
-      padding: 0;
-      overflow-x: hidden;
-      text-align: center;
-    }
-
-    /* 上部説明とロゴ */
-    header {
-      padding: 20px 10px 10px;
-      text-align: center;
-      background: #111;
-      border-bottom: 1px solid #333;
-    }
-
-    header h1 {
-      margin: 0;
-      font-size: 1.8rem;
-      color: #ff80b0;
-    }
-
-    header p {
-      margin-top: 6px;
-      font-size: 0.95rem;
-      color: #ccc;
-      line-height: 1.6;
+      overflow: hidden;
     }
 
     /* メニューボタン */
-    #menuButton {
+    .menu {
       position: fixed;
       top: 15px;
       right: 15px;
-      background: #222;
-      color: #fff;
+      background: rgba(20, 20, 20, 0.9);
+      border-radius: 8px;
       padding: 10px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 20px;
-      opacity: 0.7;
       transition: opacity 0.3s;
-      z-index: 1000;
+      opacity: 0.2;
     }
 
-    #menuButton:hover { opacity: 1; }
+    .menu:hover { opacity: 1; }
 
-    /* メニュー */
-    #menu {
-      position: fixed;
-      top: 15px;
-      right: 60px;
-      background: rgba(20,20,20,0.95);
-      border-radius: 8px;
-      padding: 15px;
-      display: none;
-      flex-direction: column;
-      gap: 10px;
-      text-align: left;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-      z-index: 999;
-    }
-
-    #menu a, #menu button {
+    .menu a {
       display: block;
       color: #fff;
-      background: #ff4081;
-      border: none;
-      border-radius: 6px;
-      padding: 10px 14px;
       text-decoration: none;
-      text-align: center;
+      padding: 6px 12px;
+      border-radius: 5px;
       font-weight: bold;
-      cursor: pointer;
+      font-size: 0.9rem;
+      margin-bottom: 4px;
+      background: #222;
+      transition: background 0.2s;
     }
 
-    #menu a:hover, #menu button:hover {
-      background: #e73370;
-    }
+    .menu a:hover { background: #444; }
 
+    /* プレイヤーエリア */
     #playerContainer {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      align-items: center;
-      gap: 10px;
-      padding: 20px;
+      display: grid;
+      width: 100vw;
+      height: 100vh;
+      place-items: center;
+      gap: 6px;
+      padding: 8px;
+      box-sizing: border-box;
+      overflow: hidden;
     }
 
     .player {
@@ -105,141 +60,88 @@
       overflow: hidden;
       position: relative;
       aspect-ratio: 16 / 9;
-      transition: all 0.3s ease;
     }
 
     iframe {
       width: 100%;
       height: 100%;
       border: none;
-      display: block;
+    }
+
+    /* レイアウト自動調整 */
+    @media (min-width: 1024px) {
+      #playerContainer[data-count="1"] {
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+      }
+      #playerContainer[data-count="2"] {
+        grid-template-columns: 1fr 1fr;
+      }
+      #playerContainer[data-count="3"] {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
+      #playerContainer[data-count="4"] {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+      }
+      #playerContainer[data-count="5"] {
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+      }
     }
 
     .delete-btn {
       position: absolute;
-      top: 8px;
-      left: 8px;
+      top: 6px;
+      left: 6px;
+      width: 28px;
+      height: 28px;
       background: rgba(255, 0, 0, 0.75);
       border: none;
       border-radius: 50%;
-      color: white;
-      width: 26px;
-      height: 26px;
-      font-size: 16px;
+      color: #fff;
       cursor: pointer;
-      opacity: 0;
-      transition: opacity 0.3s;
+      display: none;
     }
 
     .player:hover .delete-btn {
-      opacity: 1;
-    }
-
-    footer {
-      text-align: center;
-      padding: 25px;
-      color: #aaa;
-      font-size: 0.9rem;
-    }
-
-    footer a {
-      color: #ff80b0;
-      text-decoration: none;
-    }
-
-    footer a:hover { text-decoration: underline; }
-
-    @media (max-width: 768px) {
-      #menu { right: 10px; top: 55px; width: 85%; }
+      display: block;
     }
   </style>
 </head>
 <body>
-  <header>
-    <h1>🎬 オタク再生ツール</h1>
-    <p>
-      YouTubeとTwitchのライブ配信を同時に再生して、推し活をもっと快適に。<br>
-      URLを追加するだけで複数の配信を並べて楽しめます。
-    </p>
-  </header>
 
-  <div id="menuButton">☰</div>
-  <div id="menu">
-    <input id="urlInput" type="text" placeholder="YouTubeまたはTwitchのURLを入力" style="width:100%;padding:8px;border-radius:6px;border:none;">
-    <button onclick="addVideo()">追加</button>
-    <button onclick="playAll()">▶ 同時再生</button>
-    <button onclick="pauseAll()">⏸ 一時停止</button>
-    <button onclick="removeAll()" style="background:#b00020;">🗑 全削除</button>
-    <a href="about.html">このサイトについて</a>
-    <a href="privacy.html">プライバシーポリシー</a>
-    <a href="terms.html">利用規約</a>
-    <a href="contact.html">お問い合わせ</a>
+  <!-- メニュー -->
+  <div class="menu">
+    <a href="../index.html">🏠 トップへ戻る</a>
+    <a href="../about.html">📄 このサイトについて</a>
+    <a href="../privacy.html">🔒 プライバシーポリシー</a>
+    <a href="../terms.html">📜 利用規約</a>
+    <a href="../contact.html">✉️ お問い合わせ</a>
   </div>
 
-  <div id="playerContainer"></div>
+  <!-- プレイヤーコンテナ -->
+  <div id="playerContainer" data-count="0"></div>
 
-  <footer>
-    サイト運営支援 → <a href="https://paypal.me/otakuplayer486" target="_blank">PayPal</a>
-  </footer>
-
-  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
     const container = document.getElementById("playerContainer");
-    const urlInput = document.getElementById("urlInput");
-    const menu = document.getElementById("menu");
-    const menuButton = document.getElementById("menuButton");
 
-    let players = [];
-
-    menuButton.addEventListener("mouseenter", () => { menu.style.display = "flex"; });
-    menu.addEventListener("mouseleave", () => { menu.style.display = "none"; });
-
-    function getEmbedURL(url) {
-      if (url.includes("twitch.tv")) {
-        const channel = url.split("twitch.tv/")[1].split("/")[0];
-        return `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
-      } else if (url.includes("youtube.com") || url.includes("youtu.be")) {
-        const match = url.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
-        return match ? `https://www.youtube.com/embed/${match[1]}?enablejsapi=1` : null;
-      }
-      return null;
+    // ローカル保存から復元
+    function restoreState() {
+      const saved = JSON.parse(localStorage.getItem("players") || "[]");
+      saved.forEach(src => addPlayer(src));
     }
 
-    function addVideo(url = null) {
-      const input = url || urlInput.value.trim();
-      if (!input) return alert("URLを入力してください！");
-      const embedUrl = getEmbedURL(input);
-      if (!embedUrl) return alert("無効なURLです。");
-
+    function addPlayer(url) {
       const div = document.createElement("div");
       div.className = "player";
       div.innerHTML = `
-        <iframe src="${embedUrl}" allowfullscreen></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustLayout();">×</button>
-      `;
+        <iframe src="${url}" allowfullscreen></iframe>
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateLayout();">×</button>`;
       container.appendChild(div);
-      urlInput.value = "";
       saveState();
-      adjustLayout();
-    }
-
-    function playAll() {
-      container.querySelectorAll("iframe").forEach(f =>
-        f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
-      );
-    }
-
-    function pauseAll() {
-      container.querySelectorAll("iframe").forEach(f =>
-        f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*")
-      );
-    }
-
-    function removeAll() {
-      if (confirm("すべて削除しますか？")) {
-        container.innerHTML = "";
-        saveState();
-      }
+      updateLayout();
     }
 
     function saveState() {
@@ -247,34 +149,15 @@
       localStorage.setItem("players", JSON.stringify(urls));
     }
 
-    function restoreState() {
-      const saved = JSON.parse(localStorage.getItem("players") || "[]");
-      saved.forEach(src => {
-        const div = document.createElement("div");
-        div.className = "player";
-        div.innerHTML = `
-          <iframe src="${src}" allowfullscreen></iframe>
-          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustLayout();">×</button>
-        `;
-        container.appendChild(div);
-      });
-      adjustLayout();
+    function updateLayout() {
+      const count = container.querySelectorAll(".player").length;
+      container.setAttribute("data-count", count);
     }
 
-    function adjustLayout() {
-      const players = [...container.querySelectorAll(".player")];
-      const count = players.length;
-      players.forEach((p, i) => {
-        p.style.flex = count === 1 ? "1 1 80%" :
-                       count === 3 && i === 2 ? "1 1 60%" :
-                       count % 2 !== 0 && i === count - 1 ? "1 1 60%" :
-                       "1 1 45%";
-        p.style.maxWidth = count <= 2 ? "48%" : count % 2 !== 0 && i === count - 1 ? "60%" : "45%";
-      });
-    }
-
-    new Sortable(container, { animation: 150, ghostClass: "sortable-ghost", onEnd: saveState });
+    // 初期化
     restoreState();
+    updateLayout();
   </script>
+
 </body>
 </html>
