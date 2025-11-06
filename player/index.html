@@ -14,14 +14,13 @@
       overflow: hidden;
     }
 
-    /* ===== 🎛 ハンバーガーメニュー ===== */
+    /* ===== メニュー ===== */
     .menu {
       position: fixed;
       top: 15px;
       right: 20px;
       z-index: 1000;
     }
-
     .menu-button {
       background: none;
       border: none;
@@ -32,7 +31,6 @@
       flex-direction: column;
       justify-content: space-between;
     }
-
     .menu-button span {
       display: block;
       height: 4px;
@@ -40,7 +38,6 @@
       border-radius: 2px;
       transition: 0.3s;
     }
-
     .menu-content {
       position: absolute;
       top: 40px;
@@ -48,15 +45,11 @@
       background: rgba(30, 30, 30, 0.95);
       border-radius: 8px;
       padding: 15px;
-      width: 280px;
+      width: 300px;
       display: none;
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
     }
-
-    .menu-content.show {
-      display: block;
-    }
-
+    .menu-content.show { display: block; }
     .menu-content input {
       width: 100%;
       padding: 10px;
@@ -65,10 +58,9 @@
       outline: none;
       background: #222;
       color: #fff;
-      font-size: 0.9rem;
+      font-size: 0.95rem;
       margin-bottom: 10px;
     }
-
     .menu-content button {
       width: 100%;
       padding: 10px;
@@ -79,23 +71,14 @@
       cursor: pointer;
       margin-bottom: 8px;
     }
-
     .menu-content button.add { background: #ff4081; }
     .menu-content button.play { background: #4caf50; }
     .menu-content button.pause { background: #2196f3; }
     .menu-content button.remove { background: #b00020; }
+    .menu-content a { display:block; margin-top:8px; color:#ff80b0; text-decoration:none; font-size:0.9rem; }
+    .menu-content a:hover { text-decoration:underline; }
 
-    .menu-content a {
-      display: block;
-      margin-top: 8px;
-      color: #ff80b0;
-      text-decoration: none;
-      font-size: 0.9rem;
-    }
-
-    .menu-content a:hover { text-decoration: underline; }
-
-    /* ===== 🎥 プレイヤーエリア ===== */
+    /* ===== プレイヤーエリア ===== */
     #playerContainer {
       display: flex;
       flex-wrap: wrap;
@@ -116,6 +99,9 @@
       flex: 1 1 calc(48%);
       aspect-ratio: 16/9;
       transition: all 0.3s ease;
+      display: flex;
+      align-items: stretch;
+      justify-content: stretch;
     }
 
     iframe {
@@ -138,10 +124,33 @@
       font-size: 15px;
       cursor: pointer;
       opacity: 0;
-      transition: opacity 0.3s;
+      transition: opacity 0.2s;
+      z-index: 20;
     }
-
     .player:hover .delete-btn { opacity: 1; }
+
+    /* ===== ドラッグハンドル ===== */
+    .drag-handle {
+      position: absolute;
+      top: 6px;
+      right: 6px;
+      width: 30px;
+      height: 30px;
+      background: rgba(255,255,255,0.06);
+      color: #fff;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      cursor: grab;
+      z-index: 20;
+      opacity: 0;
+      transition: opacity 0.15s, background 0.15s;
+      user-select: none;
+    }
+    .player:hover .drag-handle { opacity: 1; }
+    .drag-handle:active { cursor: grabbing; background: rgba(255,255,255,0.12); }
 
     /* 空時メッセージ */
     #emptyMessage {
@@ -152,23 +161,25 @@
       color: #aaa;
       font-size: 1rem;
       text-align: center;
+      pointer-events: none;
     }
 
     @media (max-width: 768px) {
-      .player { flex: 1 1 100%; }
+      .player { flex: 1 1 100%; max-width: 100%; }
+      .menu-content { width: 90vw; right: 5vw; }
     }
   </style>
 </head>
 <body>
 
-  <!-- 🎛 メニュー -->
+  <!-- メニュー -->
   <div class="menu">
     <button class="menu-button" onclick="toggleMenu()">
       <span></span><span></span><span></span>
     </button>
 
     <div class="menu-content" id="menuContent">
-      <p style="margin: 0 0 10px;">🎬 配信URLを入力してください</p>
+      <p style="margin:0 0 8px;">🎬 配信URLを入力してください</p>
       <input id="urlInput" type="text" placeholder="YouTube または Twitch のURL">
       <button class="add" onclick="addVideo()">追加</button>
       <button class="play" onclick="playAll()">▶ 一括再生</button>
@@ -183,9 +194,9 @@
     </div>
   </div>
 
-  <!-- 🎥 再生プレイヤー領域 -->
+  <!-- プレイヤー領域 -->
   <div id="playerContainer"></div>
-  <div id="emptyMessage">🎮 メニュー右上（三本線）からURLを追加してください！</div>
+  <div id="emptyMessage">🎮 右上メニューからURLを追加してください</div>
 
   <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
@@ -193,6 +204,7 @@
     const container = document.getElementById("playerContainer");
     const urlInput = document.getElementById("urlInput");
     const emptyMessage = document.getElementById("emptyMessage");
+    let sortable = null;
 
     function toggleMenu() {
       menu.classList.toggle("show");
@@ -202,31 +214,49 @@
       emptyMessage.style.display = container.children.length === 0 ? "block" : "none";
     }
 
-    function addVideo(url = null) {
-      let input = url || urlInput.value.trim();
-      if (!input) return alert("URLを入力してください！");
-      let embedUrl = "";
-
+    function getEmbedFromInput(input) {
+      if (!input) return null;
       if (input.includes("twitch.tv")) {
-        const channel = input.split("twitch.tv/")[1].split("/")[0];
-        embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
+        const parts = input.split("twitch.tv/")[1];
+        if (!parts) return null;
+        const channel = parts.split("/")[0].split("?")[0];
+        return `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
       } else if (input.includes("youtube.com") || input.includes("youtu.be")) {
-        const match = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
+        const match = input.match(/(?:v=|youtu\.be\/|embed\/)([a-zA-Z0-9_-]{6,})/);
         const videoId = match ? match[1] : null;
-        if (!videoId) return alert("YouTubeのURLが無効です！");
-        embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
-      } else {
-        return alert("対応していないURL形式です。");
+        if (!videoId) return null;
+        return `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
       }
+      return null;
+    }
 
+    function createPlayerElement(embedUrl) {
       const div = document.createElement("div");
       div.className = "player";
       div.innerHTML = `
         <iframe src="${embedUrl}" allowfullscreen></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustPlayerLayout(); updateEmptyMessage();">×</button>
+        <button class="delete-btn" onclick="removePlayer(this)">×</button>
+        <div class="drag-handle" title="ドラッグで並べ替え">≡</div>
       `;
-      container.appendChild(div);
+      return div;
+    }
+
+    function addVideo(url = null) {
+      const input = (url || urlInput.value || "").trim();
+      if (!input) return alert("URLを入力してください！");
+      const embed = getEmbedFromInput(input);
+      if (!embed) return alert("無効なURLです。YouTube/TwitchのURLを入力してください。");
+
+      const el = createPlayerElement(embed);
+      container.appendChild(el);
       urlInput.value = "";
+      saveState();
+      adjustPlayerLayout();
+      updateEmptyMessage();
+    }
+
+    function removePlayer(btn) {
+      btn.parentElement.remove();
       saveState();
       adjustPlayerLayout();
       updateEmptyMessage();
@@ -245,11 +275,11 @@
     }
 
     function removeAll() {
-      if (confirm("すべて削除しますか？")) {
-        container.innerHTML = "";
-        saveState();
-        updateEmptyMessage();
-      }
+      if (!confirm("すべて削除しますか？")) return;
+      container.innerHTML = "";
+      saveState();
+      adjustPlayerLayout();
+      updateEmptyMessage();
     }
 
     function saveState() {
@@ -260,40 +290,56 @@
     function restoreState() {
       const saved = JSON.parse(localStorage.getItem("players") || "[]");
       saved.forEach(src => {
-        const div = document.createElement("div");
-        div.className = "player";
-        div.innerHTML = `
-          <iframe src="${src}" allowfullscreen></iframe>
-          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); adjustPlayerLayout(); updateEmptyMessage();">×</button>
-        `;
-        container.appendChild(div);
+        const el = createPlayerElement(src);
+        container.appendChild(el);
       });
+      // Sortable 初期化は restore 後に行う（要素が揃ってから）
+      initSortable();
       adjustPlayerLayout();
       updateEmptyMessage();
     }
 
-    // 🎯 プレイヤー数に応じてレイアウト調整
-    function adjustPlayerLayout() {
-      const players = [...container.querySelectorAll(".player")];
-      const count = players.length;
-
-      if (count === 0) return;
-
-      let size = 48; // デフォルト
-      if (count === 1) size = 80;
-      else if (count === 2) size = 48;
-      else if (count <= 4) size = 38;
-      else if (count <= 6) size = 32;
-      else size = 28;
-
-      players.forEach(p => {
-        p.style.flex = `1 1 ${size}%`;
-        p.style.maxWidth = `${size}%`;
+    function initSortable() {
+      if (sortable) sortable.destroy(); // 再初期化を安全に
+      sortable = new Sortable(container, {
+        animation: 150,
+        handle: '.drag-handle',
+        onEnd: function () {
+          saveState();
+          adjustPlayerLayout();
+        }
       });
     }
 
-    new Sortable(container, { animation: 150, onEnd: saveState });
+    // レイアウト自動調整（要素数に応じて幅を決める）
+    function adjustPlayerLayout() {
+      const players = Array.from(container.querySelectorAll('.player'));
+      const count = players.length;
+      if (count === 0) return;
+
+      // 動的に幅% を算出して、常に画面に収める（スクロールしない）
+      // 基本は最大2列にして、要素数が増えると自動で縮小
+      // 調整方針：1 -> 96%, 2 -> 48%, 3 -> 32%, 4 -> 32%, 5 -> 24%, 6 -> 20%...
+      let widthPercent;
+      if (count === 1) widthPercent = 96;
+      else if (count === 2) widthPercent = 48;
+      else if (count === 3) widthPercent = 32; // 3つ並べても横幅には収まる（自動折返し）
+      else if (count === 4) widthPercent = 32;
+      else if (count === 5) widthPercent = 24;
+      else if (count === 6) widthPercent = 20;
+      else widthPercent = Math.max(12, Math.floor(90 / count)); // 多い場合はさらに縮小
+
+      players.forEach(p => {
+        p.style.flex = `1 1 ${widthPercent}%`;
+        p.style.maxWidth = `${widthPercent}%`;
+      });
+    }
+
+    // 初期化
     restoreState();
+
+    // ウィンドウサイズ変化にも対応してレイアウトを維持
+    window.addEventListener('resize', adjustPlayerLayout);
   </script>
 </body>
 </html>
