@@ -1,233 +1,204 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>オタク再生ツール</title>
+  <meta name="description" content="YouTube・Twitchの配信を同時再生できる無料ツール。お気に入りの配信を複数並べて楽しもう！">
   <style>
     body {
-      background: #0e0e0e;
-      color: #f0f0f0;
-      font-family: "Noto Sans JP", sans-serif;
       margin: 0;
+      padding: 0;
+      background: #0e0e0e;
+      color: #eee;
+      font-family: "Noto Sans JP", sans-serif;
       overflow: hidden;
     }
 
-    /* ===== ハンバーガーメニュー ===== */
-    .menu-button {
+    /* 🔹 検索バー固定＆シンプル化 */
+    header {
       position: fixed;
-      top: 15px;
-      right: 15px;
-      background: rgba(255, 255, 255, 0.1);
-      border: none;
-      border-radius: 8px;
-      padding: 10px 12px;
-      cursor: pointer;
-      z-index: 1001;
-      transition: background 0.3s;
-    }
-    .menu-button:hover { background: rgba(255, 255, 255, 0.2); }
-    .menu-button div {
-      width: 25px;
-      height: 3px;
-      background: #fff;
-      margin: 5px 0;
-      border-radius: 2px;
-    }
-
-    /* ===== メニュー本体 ===== */
-    .menu {
-      position: fixed;
-      top: 0;
-      right: -240px;
-      width: 220px;
-      height: 100%;
-      background: rgba(15, 15, 15, 0.96);
-      box-shadow: -2px 0 8px rgba(0, 0, 0, 0.5);
-      display: flex;
-      flex-direction: column;
-      padding: 70px 18px;
-      transition: right 0.4s ease;
+      top: 10px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(30,30,30,0.9);
+      padding: 10px 20px;
+      border-radius: 10px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.4);
       z-index: 1000;
+      display: flex;
+      gap: 8px;
+      align-items: center;
     }
-    .menu.open { right: 0; }
-    .menu a, .menu button {
-      color: #fff;
-      text-decoration: none;
-      font-weight: bold;
-      padding: 10px 0;
-      width: 100%;
-      border: none;
-      background: none;
-      text-align: left;
-      border-bottom: 1px solid rgba(255,255,255,0.1);
-      cursor: pointer;
-      font-size: 15px;
-      transition: color 0.2s;
-    }
-    .menu a:hover, .menu button:hover { color: #ff80b0; }
 
-    /* ===== プレイヤー配置 ===== */
+    input {
+      padding: 10px;
+      border-radius: 6px;
+      border: none;
+      outline: none;
+      width: 280px;
+      background: #222;
+      color: white;
+      font-size: 0.95rem;
+    }
+
+    button {
+      background: #ff4081;
+      border: none;
+      border-radius: 6px;
+      color: white;
+      padding: 8px 14px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    button:hover {
+      background: #e73370;
+    }
+
+    /* 🔹 プレイヤーコンテナ */
     #playerContainer {
       display: flex;
-      flex-direction: column;
+      flex-wrap: wrap;
+      justify-content: center;
       align-items: center;
-      justify-content: center;
+      gap: 10px;
+      width: 100%;
       height: 100vh;
-      width: 100vw;
-      overflow: hidden;
-      gap: 8px;
+      box-sizing: border-box;
+      padding-top: 70px;
     }
-    .row {
-      display: flex;
-      justify-content: center;
-      gap: 8px;
-    }
+
     .player {
-      background: #000;
+      background: black;
       border-radius: 8px;
       overflow: hidden;
-      aspect-ratio: 16/9;
       position: relative;
-      flex-shrink: 0;
+      flex: 1 1 calc(48%);
+      max-width: 48%;
+      aspect-ratio: 16 / 9;
+      transition: all 0.3s ease;
     }
+
     iframe {
       width: 100%;
       height: 100%;
       border: none;
     }
+
+    /* 🔹 削除ボタン */
     .delete-btn {
       position: absolute;
-      top: 6px;
-      left: 6px;
-      width: 28px;
-      height: 28px;
-      background: rgba(255, 0, 0, 0.75);
+      top: 5px;
+      left: 5px;
+      background: rgba(255,0,0,0.75);
       border: none;
       border-radius: 50%;
-      color: #fff;
-      cursor: pointer;
-      display: none;
-      z-index: 100;
-    }
-    .player:hover .delete-btn { display: block; }
-
-    /* ===== モーダル ===== */
-    .modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      display: none;
-      justify-content: center;
-      align-items: center;
-      z-index: 2000;
-    }
-    .modal.open { display: flex; }
-    .modal-content {
-      background: #222;
-      padding: 20px 30px;
-      border-radius: 10px;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
-    }
-    .modal input {
-      width: 300px;
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      margin: 10px 0;
+      color: white;
+      width: 26px;
+      height: 26px;
       font-size: 16px;
-    }
-    .modal button {
-      margin: 5px;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 6px;
       cursor: pointer;
-      font-size: 14px;
-      font-weight: bold;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
-    .add-confirm { background: #ff80b0; color: #fff; }
-    .add-cancel { background: #444; color: #fff; }
+
+    .player:hover .delete-btn { opacity: 1; }
+
+    /* 🔹 プレイヤーなしの時の案内 */
+    #emptyMessage {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #aaa;
+      font-size: 1rem;
+      opacity: 0.8;
+    }
+
+    @media (max-width: 768px) {
+      .player {
+        flex: 1 1 100%;
+        max-width: 100%;
+      }
+      header {
+        flex-direction: column;
+        padding: 10px;
+      }
+    }
   </style>
 </head>
 <body>
-  <!-- ハンバーガーメニュー -->
-  <button class="menu-button" id="menuBtn">
-    <div></div><div></div><div></div>
-  </button>
 
-  <!-- メニュー -->
-  <div class="menu" id="menu">
-    <a href="../index.html">🏠 トップへ戻る</a>
-    <a href="../about.html">📄 このサイトについて</a>
-    <a href="../privacy.html">🔒 プライバシーポリシー</a>
-    <a href="../terms.html">📜 利用規約</a>
-    <a href="../contact.html">✉️ お問い合わせ</a>
-    <button id="openAddModal">🎥 動画を追加</button>
-  </div>
+  <header>
+    <input id="urlInput" type="text" placeholder="YouTube または Twitch の URLを入力">
+    <button onclick="addVideo()">追加</button>
+    <button onclick="playAll()">▶ 再生</button>
+    <button onclick="pauseAll()">⏸ 停止</button>
+    <button onclick="removeAll()" style="background:#b00020;">🗑 全削除</button>
+  </header>
 
-  <!-- プレイヤー -->
   <div id="playerContainer"></div>
+  <div id="emptyMessage">🎬 URLを入力して「追加」ボタンを押してください！</div>
 
-  <!-- モーダル -->
-  <div class="modal" id="modal">
-    <div class="modal-content">
-      <h3>動画URLを追加</h3>
-      <input type="text" id="videoUrl" placeholder="YouTube埋め込みURLを貼り付け" />
-      <div>
-        <button class="add-confirm" id="confirmAdd">追加</button>
-        <button class="add-cancel" id="cancelAdd">キャンセル</button>
-      </div>
-    </div>
-  </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
   <script>
     const container = document.getElementById("playerContainer");
-    const menu = document.getElementById("menu");
-    const menuBtn = document.getElementById("menuBtn");
-    const openAddModal = document.getElementById("openAddModal");
-    const modal = document.getElementById("modal");
-    const confirmAdd = document.getElementById("confirmAdd");
-    const cancelAdd = document.getElementById("cancelAdd");
-    const inputUrl = document.getElementById("videoUrl");
+    const urlInput = document.getElementById("urlInput");
+    const emptyMessage = document.getElementById("emptyMessage");
 
-    // メニュー操作
-    menuBtn.addEventListener("click", () => menu.classList.toggle("open"));
-    document.addEventListener("click", e => {
-      if (!menu.contains(e.target) && !menuBtn.contains(e.target))
-        menu.classList.remove("open");
-    });
-
-    // モーダル操作
-    openAddModal.onclick = () => {
-      modal.classList.add("open");
-      menu.classList.remove("open");
-    };
-    cancelAdd.onclick = () => { modal.classList.remove("open"); inputUrl.value = ""; };
-    confirmAdd.onclick = () => {
-      const url = inputUrl.value.trim();
-      if (url) addPlayer(url);
-      inputUrl.value = "";
-      modal.classList.remove("open");
-    };
-
-    // プレイヤー関連
-    function restoreState() {
-      const saved = JSON.parse(localStorage.getItem("players") || "[]");
-      saved.forEach(src => addPlayer(src));
+    function updateEmptyMessage() {
+      emptyMessage.style.display = container.children.length === 0 ? "block" : "none";
     }
 
-    function addPlayer(url) {
+    function addVideo(url = null) {
+      let input = url || urlInput.value.trim();
+      if (!input) return alert("URLを入力してください！");
+      let embedUrl = "";
+
+      if (input.includes("twitch.tv")) {
+        const channel = input.split("twitch.tv/")[1].split("/")[0];
+        embedUrl = `https://player.twitch.tv/?channel=${channel}&parent=${location.hostname}`;
+      } else if (input.includes("youtube.com") || input.includes("youtu.be")) {
+        const match = input.match(/(?:v=|youtu\.be\/)([a-zA-Z0-9_-]{6,})/);
+        const videoId = match ? match[1] : null;
+        if (!videoId) return alert("YouTubeのURLが無効です！");
+        embedUrl = `https://www.youtube.com/embed/${videoId}?enablejsapi=1`;
+      } else {
+        return alert("対応していないURL形式です。");
+      }
+
       const div = document.createElement("div");
       div.className = "player";
       div.innerHTML = `
-        <iframe src="${url}" allowfullscreen></iframe>
-        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateLayout();">×</button>`;
+        <iframe src="${embedUrl}" allowfullscreen></iframe>
+        <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateEmptyMessage();">×</button>
+      `;
       container.appendChild(div);
+      urlInput.value = "";
       saveState();
-      updateLayout();
+      updateEmptyMessage();
+    }
+
+    function playAll() {
+      container.querySelectorAll("iframe").forEach(f =>
+        f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
+      );
+    }
+
+    function pauseAll() {
+      container.querySelectorAll("iframe").forEach(f =>
+        f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*")
+      );
+    }
+
+    function removeAll() {
+      if (confirm("すべて削除しますか？")) {
+        container.innerHTML = "";
+        saveState();
+        updateEmptyMessage();
+      }
     }
 
     function saveState() {
@@ -235,38 +206,22 @@
       localStorage.setItem("players", JSON.stringify(urls));
     }
 
-    function updateLayout() {
-      const players = Array.from(container.querySelectorAll(".player"));
-      container.innerHTML = "";
-      if (players.length === 0) return;
-
-      const rows = [];
-      if (players.length <= 2) rows.push(players);
-      else if (players.length === 3) rows.push(players.slice(0, 2), [players[2]]);
-      else if (players.length === 4) rows.push(players.slice(0, 2), players.slice(2));
-      else if (players.length === 5) rows.push(players.slice(0, 2), players.slice(2, 4), [players[4]]);
-      else if (players.length === 6) rows.push(players.slice(0, 3), players.slice(3));
-      else if (players.length === 7) rows.push(players.slice(0, 2), players.slice(2, 4), players.slice(4, 6), [players[6]]);
-      else rows.push(players);
-
-      const totalRows = rows.length;
-      const heightPerRow = 100 / totalRows - 2;
-      rows.forEach(r => {
-        const rowDiv = document.createElement("div");
-        rowDiv.className = "row";
-        rowDiv.style.height = heightPerRow + "vh";
-        const width = 90 / r.length;
-        r.forEach(p => {
-          p.style.width = width + "vw";
-          p.style.height = "100%";
-          rowDiv.appendChild(p);
-        });
-        container.appendChild(rowDiv);
+    function restoreState() {
+      const saved = JSON.parse(localStorage.getItem("players") || "[]");
+      saved.forEach(src => {
+        const div = document.createElement("div");
+        div.className = "player";
+        div.innerHTML = `
+          <iframe src="${src}" allowfullscreen></iframe>
+          <button class="delete-btn" onclick="this.parentElement.remove(); saveState(); updateEmptyMessage();">×</button>
+        `;
+        container.appendChild(div);
       });
+      updateEmptyMessage();
     }
 
+    new Sortable(container, { animation: 150, ghostClass: "sortable-ghost", onEnd: saveState });
     restoreState();
-    updateLayout();
   </script>
 </body>
 </html>
