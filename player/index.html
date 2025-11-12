@@ -83,20 +83,21 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       width: 100%;
       height: 100vh;
-      gap: 6px;
-      padding: 10px;
+      gap: 4px;
+      padding: 6px;
       box-sizing: border-box;
     }
 
     .player {
       position: relative;
       background: black;
-      border-radius: 8px;
+      border-radius: 6px;
       overflow: hidden;
-      flex: 1 1 calc(48%);
+      flex: 1 1 32%;
+      max-width: 32%;
       aspect-ratio: 16/9;
       transition: all 0.3s ease;
       display: flex;
@@ -129,7 +130,7 @@
     }
     .player:hover .delete-btn { opacity: 1; }
 
-    /* ===== ドラッグハンドル ===== */
+    /* ドラッグハンドル */
     .drag-handle {
       position: absolute;
       top: 6px;
@@ -262,26 +263,6 @@
       updateEmptyMessage();
     }
 
-    function playAll() {
-      container.querySelectorAll("iframe").forEach(f =>
-        f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
-      );
-    }
-
-    function pauseAll() {
-      container.querySelectorAll("iframe").forEach(f =>
-        f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*")
-      );
-    }
-
-    function removeAll() {
-      if (!confirm("すべて削除しますか？")) return;
-      container.innerHTML = "";
-      saveState();
-      adjustPlayerLayout();
-      updateEmptyMessage();
-    }
-
     function saveState() {
       const urls = [...container.querySelectorAll("iframe")].map(f => f.src);
       localStorage.setItem("players", JSON.stringify(urls));
@@ -293,14 +274,13 @@
         const el = createPlayerElement(src);
         container.appendChild(el);
       });
-      // Sortable 初期化は restore 後に行う（要素が揃ってから）
       initSortable();
       adjustPlayerLayout();
       updateEmptyMessage();
     }
 
     function initSortable() {
-      if (sortable) sortable.destroy(); // 再初期化を安全に
+      if (sortable) sortable.destroy();
       sortable = new Sortable(container, {
         animation: 150,
         handle: '.drag-handle',
@@ -311,35 +291,32 @@
       });
     }
 
-    // レイアウト自動調整（要素数に応じて幅を決める）
+    // ===== レイアウト（逆三角形対応）=====
     function adjustPlayerLayout() {
-      const players = Array.from(container.querySelectorAll('.player'));
+      const players = [...container.querySelectorAll(".player")];
       const count = players.length;
       if (count === 0) return;
 
-      // 動的に幅% を算出して、常に画面に収める（スクロールしない）
-      // 基本は最大2列にして、要素数が増えると自動で縮小
-      // 調整方針：1 -> 96%, 2 -> 48%, 3 -> 32%, 4 -> 32%, 5 -> 24%, 6 -> 20%...
-      let widthPercent;
-      if (count === 1) widthPercent = 96;
-      else if (count === 2) widthPercent = 48;
-      else if (count === 3) widthPercent = 32; // 3つ並べても横幅には収まる（自動折返し）
-      else if (count === 4) widthPercent = 32;
-      else if (count === 5) widthPercent = 24;
-      else if (count === 6) widthPercent = 20;
-      else widthPercent = Math.max(12, Math.floor(90 / count)); // 多い場合はさらに縮小
-
+      // 一旦リセット
+      container.style.justifyContent = "center";
       players.forEach(p => {
-        p.style.flex = `1 1 ${widthPercent}%`;
-        p.style.maxWidth = `${widthPercent}%`;
+        p.style.flex = "1 1 32%";
+        p.style.maxWidth = "32%";
       });
+
+      // 逆三角形風に中央寄せ
+      if (count === 4) {
+        players[0].style.marginLeft = "6%";
+        players[1].style.marginRight = "6%";
+      }
+      if (count === 5) {
+        players[3].style.marginLeft = "17%";
+        players[4].style.marginRight = "17%";
+      }
     }
 
-    // 初期化
     restoreState();
-
-    // ウィンドウサイズ変化にも対応してレイアウトを維持
-    window.addEventListener('resize', adjustPlayerLayout);
+    window.addEventListener("resize", adjustPlayerLayout);
   </script>
 </body>
 </html>
