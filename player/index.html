@@ -83,24 +83,26 @@
       display: flex;
       flex-wrap: wrap;
       justify-content: center;
-      align-items: center;
-      width: 100%;
+      align-items: stretch;
+      width: 100vw;
       height: 100vh;
       gap: 0;
       padding: 0;
+      margin: 0;
       box-sizing: border-box;
     }
 
     .player {
       position: relative;
       background: black;
-      border-radius: 6px;
+      border-radius: 4px;
       overflow: hidden;
-      aspect-ratio: 16/9;
-      transition: all 0.3s ease;
+      transition: all 0.25s ease;
       display: flex;
       align-items: stretch;
       justify-content: stretch;
+      margin: 0;
+      padding: 0;
     }
 
     iframe {
@@ -164,7 +166,7 @@
     }
 
     @media (max-width: 768px) {
-      .player { flex: 1 1 100%; max-width: 100%; }
+      .player { flex: 1 1 100%; max-width: 100%; height: auto; }
       .menu-content { width: 90vw; right: 5vw; }
     }
   </style>
@@ -186,10 +188,10 @@
       <button class="remove" onclick="removeAll()">🗑 すべて削除</button>
 
       <hr style="margin:10px 0; border:0; border-top:1px solid #444;">
-      <a href="about.html">このサイトについて</a>
-      <a href="privacy.html">プライバシーポリシー</a>
-      <a href="terms.html">利用規約</a>
-      <a href="contact.html">お問い合わせ</a>
+      <a href="../about.html">このサイトについて</a>
+      <a href="../privacy.html">プライバシーポリシー</a>
+      <a href="../terms.html">利用規約</a>
+      <a href="../contact.html">お問い合わせ</a>
     </div>
   </div>
 
@@ -261,6 +263,26 @@
       updateEmptyMessage();
     }
 
+    function playAll() {
+      container.querySelectorAll("iframe").forEach(f =>
+        f.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', "*")
+      );
+    }
+
+    function pauseAll() {
+      container.querySelectorAll("iframe").forEach(f =>
+        f.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', "*")
+      );
+    }
+
+    function removeAll() {
+      if (!confirm("すべて削除しますか？")) return;
+      container.innerHTML = "";
+      saveState();
+      adjustPlayerLayout();
+      updateEmptyMessage();
+    }
+
     function saveState() {
       const urls = [...container.querySelectorAll("iframe")].map(f => f.src);
       localStorage.setItem("players", JSON.stringify(urls));
@@ -286,35 +308,38 @@
       });
     }
 
-    // ===== レイアウト =====
+    // ===== レイアウト最適化（上下ゼロ・逆三角形対応）=====
     function adjustPlayerLayout() {
       const players = [...container.querySelectorAll(".player")];
       const count = players.length;
       if (count === 0) return;
 
-      // 基本サイズ（少ない時は拡大）
-      let width;
-      if (count === 1) width = 90;
-      else if (count === 2) width = 45;
-      else if (count === 3) width = 30;
-      else if (count === 4) width = 30;
-      else if (count === 5) width = 24;
-      else width = Math.max(16, Math.floor(90 / count));
+      let cols, rows;
+      if (count === 1) { cols = 1; rows = 1; }
+      else if (count === 2) { cols = 2; rows = 1; }
+      else if (count === 3) { cols = 3; rows = 1; }
+      else if (count <= 4) { cols = 2; rows = 2; }
+      else if (count <= 6) { cols = 3; rows = 2; }
+      else { cols = 3; rows = Math.ceil(count / 3); }
 
-      players.forEach(p => {
-        p.style.flex = `1 1 ${width}%`;
-        p.style.maxWidth = `${width}%`;
+      const widthPercent = 100 / cols;
+      const heightPercent = 100 / rows;
+
+      players.forEach((p) => {
+        p.style.flex = `1 1 ${widthPercent}%`;
+        p.style.maxWidth = `${widthPercent}%`;
+        p.style.height = `${heightPercent}vh`;
         p.style.margin = "0";
       });
 
-      // 逆三角形の中央寄せ
+      // 逆三角形配置補正
       players.forEach(p => (p.style.marginLeft = p.style.marginRight = "0"));
       if (count === 4) {
-        players[2].style.marginLeft = "17%";
-        players[3].style.marginRight = "17%";
+        players[2].style.marginLeft = "25%";
+        players[3].style.marginRight = "25%";
       } else if (count === 5) {
-        players[3].style.marginLeft = "8%";
-        players[4].style.marginRight = "8%";
+        players[3].style.marginLeft = "12.5%";
+        players[4].style.marginRight = "12.5%";
       }
     }
 
