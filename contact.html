@@ -4,14 +4,19 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>お問い合わせ | オタク再生ツール</title>
-  <meta name="description" content="オタク再生ツールへのお問い合わせページです。ご意見・ご要望などはX（旧Twitter）のDMからご連絡ください。">
+  <meta name="description" content="オタク再生ツールへのお問い合わせページです。ご意見・ご要望・不具合の報告などはX（旧Twitter）のDMからご連絡ください。">
   <meta name="robots" content="index, follow">
   <meta name="author" content="オタク再生ツール運営チーム">
+  <link rel="canonical" href="https://otaku-player.com/contact.html">
+
+  <!-- OGP -->
   <meta property="og:title" content="お問い合わせ | オタク再生ツール">
-  <meta property="og:description" content="オタク再生ツールへのお問い合わせは、X（旧Twitter）のDMにて受け付けています。">
-  <meta property="og:type" content="website">
+  <meta property="og:description" content="オタク再生ツールへのお問い合わせは、X（旧Twitter）のDMにて受け付けています。ご意見や不具合の報告などお気軽にお寄せください。">
+  <meta property="og:type" content="article">
   <meta property="og:url" content="https://otaku-player.com/contact.html">
   <meta property="og:site_name" content="オタク再生ツール">
+  <meta property="og:image" content="https://otaku-player.com/ogp.jpg">
+
   <style>
     body {
       font-family: "Noto Sans JP", sans-serif;
@@ -29,7 +34,7 @@
     }
     p {
       text-align: center;
-      margin-bottom: 30px;
+      margin-bottom: 25px;
     }
     a {
       color: #ff80b0;
@@ -46,6 +51,13 @@
       text-align: center;
       box-shadow: 0 0 10px rgba(255, 64, 129, 0.2);
     }
+    h2 {
+      color: #ff80b0;
+      border-left: 4px solid #ff4081;
+      padding-left: 10px;
+      margin-top: 35px;
+      font-size: 1.2rem;
+    }
     footer {
       text-align: center;
       margin-top: 40px;
@@ -57,14 +69,42 @@
       color: #ff80b0;
       margin: 0 6px;
     }
+    footer a:hover {
+      text-decoration: underline;
+    }
   </style>
+
+  <!-- 構造化データ -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "ContactPage",
+    "name": "お問い合わせ | オタク再生ツール",
+    "description": "オタク再生ツールへのお問い合わせはX（旧Twitter）のDMから受け付けています。",
+    "url": "https://otaku-player.com/contact.html",
+    "publisher": {
+      "@type": "Organization",
+      "name": "オタク再生ツール運営チーム",
+      "url": "https://otaku-player.com/"
+    },
+    "contactPoint": {
+      "@type": "ContactPoint",
+      "contactType": "customer support",
+      "availableLanguage": "Japanese",
+      "url": "https://x.com/kingu_486"
+    }
+  }
+  </script>
 </head>
+
 <body>
   <h1>お問い合わせ</h1>
 
   <div class="contact-box">
-    <p>「オタク再生ツール」へのお問い合わせ・ご意見・不具合の報告などは、<br>
-    以下のX（旧Twitter）アカウントのDMより受け付けています。</p>
+    <p>
+      「オタク再生ツール」へのお問い合わせ・ご意見・不具合の報告などは、<br>
+      以下のX（旧Twitter）アカウントのDMより受け付けています。
+    </p>
 
     <p>
       📩 <a href="https://x.com/kingu_486" target="_blank" rel="noopener noreferrer">@kingu_486</a>
@@ -73,6 +113,20 @@
     <p>※返信には数日かかる場合があります。ご了承ください。</p>
   </div>
 
+  <h2>お問い合わせの目的</h2>
+  <p>
+    以下のようなご連絡を歓迎しています：
+    <br>・サイトの不具合や改善のご提案
+    <br>・利用方法に関する質問
+    <br>・広告・コラボレーションのご相談 など
+  </p>
+
+  <h2>個人情報の取り扱いについて</h2>
+  <p>
+    当サイトでは、ユーザーの個人情報をフォームやサーバーに保存しておりません。<br>
+    DMで提供いただいた情報は、返信・サポート目的以外には使用いたしません。
+  </p>
+
   <footer>
     <div>
       <a href="index.html">トップページ</a>｜
@@ -80,7 +134,7 @@
       <a href="privacy.html">プライバシーポリシー</a>｜
       <a href="terms.html">利用規約</a>
     </div>
+    <div style="margin-top:10px;">© 2025 オタク再生ツール</div>
   </footer>
 </body>
 </html>
-
