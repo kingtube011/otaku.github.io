@@ -3,10 +3,19 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="オタク再生ツールは、YouTubeとTwitchの配信を同時に再生できる無料のマルチ配信ビューワーです。推しの配信を複数同時に見たい人のための個人開発ツール。" />
+  <meta name="description" content="オタク再生ツールは、YouTubeとTwitchの配信を同時に再生できる無料のマルチ配信ビューワーです。推しの配信を同時に見たい人へ。" />
+  <meta name="keywords" content="YouTube,Twitch,同時再生,配信ツール,Vtuber,コラボ配信,無料ツール,同時視聴" />
   <meta name="google-adsense-account" content="ca-pub-1233665276169336" />
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336" crossorigin="anonymous"></script>
+  <meta property="og:title" content="オタク再生ツール - 配信を同時に見られる無料ビューア" />
+  <meta property="og:description" content="YouTubeとTwitchのライブを同時に再生できる無料ツール。配信ファンのためのシンプルなマルチビューア。" />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://otaku-player.com/" />
+  <meta property="og:image" content="https://otaku-player.com/ogp.jpg" />
+  <link rel="icon" href="/favicon.ico" type="image/x-icon" />
+  <meta name="theme-color" content="#0e0e0e" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <title>オタク再生ツール - 同時配信ビューア</title>
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336" crossorigin="anonymous"></script>
   <style>
     body {
       font-family: "Noto Sans JP", sans-serif;
@@ -21,14 +30,14 @@
     }
 
     h1 {
-      font-size: 2.3rem;
+      font-size: 2.2rem;
       color: #ff80b0;
       margin-bottom: 10px;
       letter-spacing: 1px;
     }
 
     p.lead {
-      font-size: 1.05rem;
+      font-size: 1rem;
       color: #ccc;
       margin-bottom: 25px;
       line-height: 1.7;
@@ -39,24 +48,13 @@
       color: white;
       border: none;
       border-radius: 8px;
-      padding: 14px 32px;
+      padding: 12px 26px;
       font-size: 1rem;
       cursor: pointer;
       transition: background 0.3s;
+      text-decoration: none;
     }
-
-    .cta-button:hover {
-      background: #e73370;
-    }
-
-    article {
-      max-width: 900px;
-      margin: 0 auto;
-      padding: 0 20px;
-      text-align: left;
-      line-height: 1.8;
-      color: #ddd;
-    }
+    .cta-button:hover { background: #e73370; }
 
     .features {
       display: flex;
@@ -76,15 +74,31 @@
       box-shadow: 0 0 10px rgba(255, 64, 129, 0.1);
       transition: transform 0.3s, box-shadow 0.3s;
     }
-
     .card:hover {
       transform: translateY(-5px);
       box-shadow: 0 0 20px rgba(255, 64, 129, 0.2);
     }
+    .card h3 { color: #ff80b0; margin-top: 0; }
 
-    .card h3 {
+    /* 使い方セクション */
+    .howto {
+      background: #111;
+      padding: 50px 20px;
+      text-align: left;
+      max-width: 800px;
+      margin: 40px auto;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(255,64,129,0.1);
+    }
+    .howto h2 {
       color: #ff80b0;
-      margin-top: 0;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+    .howto ol {
+      color: #ccc;
+      line-height: 1.8;
+      font-size: 0.95rem;
     }
 
     .creator {
@@ -92,12 +106,8 @@
       background: #111;
       padding: 40px 20px;
     }
-
-    .creator h2 {
-      color: #ff80b0;
-      margin-bottom: 10px;
-    }
-
+    .creator h2 { color: #ff80b0; margin-bottom: 10px; }
+    .creator p { color: #ccc; line-height: 1.7; }
     .sns-links a {
       display: inline-block;
       margin: 0 10px;
@@ -106,10 +116,18 @@
       text-decoration: none;
       transition: color 0.3s;
     }
+    .sns-links a:hover { color: #fff; }
 
-    .sns-links a:hover {
-      color: #fff;
+    .disclaimer {
+      background: #181818;
+      padding: 40px 20px;
+      max-width: 850px;
+      margin: 40px auto;
+      border-radius: 10px;
+      text-align: left;
     }
+    .disclaimer h2 { color: #ff80b0; margin-bottom: 10px; text-align: center; }
+    .disclaimer p { color: #bbb; font-size: 0.95rem; line-height: 1.7; }
 
     footer {
       margin-top: 40px;
@@ -118,76 +136,75 @@
       color: #aaa;
       border-top: 1px solid #333;
     }
-
     footer a {
       color: #ff80b0;
       text-decoration: none;
     }
-
-    footer a:hover {
-      text-decoration: underline;
-    }
+    footer a:hover { text-decoration: underline; }
 
     @media (max-width: 768px) {
       .card { width: 90%; }
-      h1 { font-size: 1.9rem; }
-      article { text-align: center; }
+      h1 { font-size: 1.8rem; }
     }
   </style>
 </head>
 <body>
+
   <header>
     <h1>🎮 オタク再生ツール</h1>
     <p class="lead">
-      YouTubeとTwitchのライブを同時に再生できる、配信ファンのための無料ツール。<br>
-      コラボ配信や大会など、複数の配信を一画面で楽しめます。
+      YouTubeとTwitchを同時に再生できる、配信ファンのための無料ツール。<br>
+      推しの配信を複数同時に見ながら楽しもう！
     </p>
-    <a href="player/index.html"><button class="cta-button">ツールを開く</button></a>
+    <a href="player/index.html" class="cta-button">ツールを開く</a>
+    <p style="margin-top:10px;font-size:0.9rem;">初めての方は<a href="#howto" style="color:#ff80b0;">使い方ガイド</a>をご覧ください。</p>
   </header>
-
-  <article>
-    <p>
-      「オタク再生ツール」は、推しの配信を複数同時に見たい人のために開発されたマルチ配信ビューワーです。  
-      登録やログインは不要で、ブラウザ上で簡単に複数のYouTube・Twitch配信を並べて視聴できます。  
-      URLを入力するだけで、複数のプレイヤーが並び、自由に並べ替えや削除が可能。  
-      コラボ配信や大会観戦、チーム視点の同時視聴に最適です。
-    </p>
-    <p>
-      このツールは個人による非公式プロジェクトであり、配信者や各プラットフォームの活動を妨げるものではありません。  
-      広告はサイト運営費の補助として表示されるもので、動画再生そのものに影響はありません。
-    </p>
-  </article>
 
   <section class="features">
     <div class="card">
       <h3>🎬 同時再生</h3>
-      <p>YouTube・Twitchどちらの配信も一緒に再生。コラボ配信を並べて見れる！</p>
+      <p>YouTube・Twitchどちらの配信も一緒に再生。コラボ配信を並べて楽しめます。</p>
     </div>
     <div class="card">
       <h3>🧩 ドラッグ操作</h3>
-      <p>プレイヤーを自由に入れ替え。見やすい位置に配置してカスタマイズ。</p>
+      <p>プレイヤーをドラッグで入れ替え。自分好みに配置できます。</p>
     </div>
     <div class="card">
       <h3>💾 自動保存</h3>
-      <p>開いていた配信URLは自動で保存され、次回開いてもすぐ再開できます。</p>
+      <p>開いていた配信URLは自動的に保存。次回もすぐ再開できます。</p>
     </div>
     <div class="card">
       <h3>🔒 安全・非ログイン</h3>
-      <p>アカウント登録不要。データはすべてブラウザ内に保存されます。</p>
+      <p>アカウント登録不要。データはすべてブラウザ内にのみ保存されます。</p>
     </div>
+  </section>
+
+  <section class="howto" id="howto">
+    <h2>🧭 使い方ガイド</h2>
+    <ol>
+      <li>右上のメニューを開いて、YouTubeまたはTwitchの配信URLを入力します。</li>
+      <li>[追加] ボタンを押すとプレイヤーが表示されます。</li>
+      <li>プレイヤーをドラッグして自由に並べ替えできます。</li>
+      <li>ブラウザにURLが自動保存されるので、次回も同じレイアウトで開けます。</li>
+    </ol>
   </section>
 
   <section class="creator">
     <h2>🧑‍💻 開発・運営</h2>
-    <p>
-      本サイトは「King（@kingu_486）」による個人開発プロジェクトです。  
-      配信をもっと便利に、もっと自由に楽しめる環境を目指しています。
-    </p>
+    <p>このサイトは個人が開発・運営する非公式のファン支援ツールです。<br>
+    配信者やコンテンツ制作者の活動を、より快適に楽しめる環境を目指しています。</p>
     <div class="sns-links">
-      <a href="https://x.com/kingu_486" target="_blank" rel="noopener">X（旧Twitter）</a>｜
-      <a href="https://www.youtube.com/@kingtube486" target="_blank" rel="noopener">YouTube</a>｜
-      <a href="https://www.twitch.tv/king_486" target="_blank" rel="noopener">Twitch</a>
+      <a href="https://x.com/kingu_486" target="_blank">X（旧Twitter）</a>｜
+      <a href="https://www.youtube.com/@kingtube486" target="_blank">YouTube</a>｜
+      <a href="https://www.twitch.tv/king_486" target="_blank">Twitch</a>
     </div>
+  </section>
+
+  <section class="disclaimer">
+    <h2>📜 免責事項</h2>
+    <p>本サイト「オタク再生ツール」は、YouTubeおよびTwitchの公式サービスとは一切関係ありません。<br>
+    表示される配信や映像は各プラットフォームの規約に準拠し、外部サービスの埋め込み機能を利用しています。<br>
+    本サイトの利用によるいかなるトラブル・損害についても、運営者は責任を負いかねます。</p>
   </section>
 
   <footer>
@@ -197,11 +214,8 @@
       <a href="terms.html">利用規約</a>｜
       <a href="contact.html">お問い合わせ</a>
     </div>
-    <div style="margin-top:10px;">
-      当サイトはYouTubeおよびTwitchの公式埋め込み機能を利用しています。<br>
-      動画や配信の著作権は各配信者・プラットフォームに帰属します。
-    </div>
-    <div style="margin-top:8px;">© 2025 オタク再生ツール</div>
+    <div>© 2025 オタク再生ツール</div>
   </footer>
+
 </body>
 </html>
