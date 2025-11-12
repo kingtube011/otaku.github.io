@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="オタク再生ツールは、YouTubeとTwitchの配信を同時に再生できる無料のマルチ配信ビューワーです。推しの配信を同時に見たい人へ。" />
+  <meta name="description" content="オタク再生ツールは、YouTubeとTwitchの配信を同時に再生できる無料のマルチ配信ビューワーです。推しの配信を複数同時に見たい人のための個人開発ツール。" />
   <meta name="google-adsense-account" content="ca-pub-1233665276169336" />
   <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336" crossorigin="anonymous"></script>
   <title>オタク再生ツール - 同時配信ビューア</title>
@@ -21,16 +21,17 @@
     }
 
     h1 {
-      font-size: 2.2rem;
+      font-size: 2.3rem;
       color: #ff80b0;
       margin-bottom: 10px;
       letter-spacing: 1px;
     }
 
     p.lead {
-      font-size: 1rem;
+      font-size: 1.05rem;
       color: #ccc;
       margin-bottom: 25px;
+      line-height: 1.7;
     }
 
     .cta-button {
@@ -38,7 +39,7 @@
       color: white;
       border: none;
       border-radius: 8px;
-      padding: 12px 26px;
+      padding: 14px 32px;
       font-size: 1rem;
       cursor: pointer;
       transition: background 0.3s;
@@ -46,6 +47,15 @@
 
     .cta-button:hover {
       background: #e73370;
+    }
+
+    article {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 0 20px;
+      text-align: left;
+      line-height: 1.8;
+      color: #ddd;
     }
 
     .features {
@@ -119,12 +129,9 @@
     }
 
     @media (max-width: 768px) {
-      .card {
-        width: 90%;
-      }
-      h1 {
-        font-size: 1.8rem;
-      }
+      .card { width: 90%; }
+      h1 { font-size: 1.9rem; }
+      article { text-align: center; }
     }
   </style>
 </head>
@@ -132,11 +139,24 @@
   <header>
     <h1>🎮 オタク再生ツール</h1>
     <p class="lead">
-      YouTubeとTwitchを同時に再生できる、配信ファンのための無料ツール。<br>
-      推しの配信を複数同時に見ながら楽しもう！
+      YouTubeとTwitchのライブを同時に再生できる、配信ファンのための無料ツール。<br>
+      コラボ配信や大会など、複数の配信を一画面で楽しめます。
     </p>
     <a href="player/index.html"><button class="cta-button">ツールを開く</button></a>
   </header>
+
+  <article>
+    <p>
+      「オタク再生ツール」は、推しの配信を複数同時に見たい人のために開発されたマルチ配信ビューワーです。  
+      登録やログインは不要で、ブラウザ上で簡単に複数のYouTube・Twitch配信を並べて視聴できます。  
+      URLを入力するだけで、複数のプレイヤーが並び、自由に並べ替えや削除が可能。  
+      コラボ配信や大会観戦、チーム視点の同時視聴に最適です。
+    </p>
+    <p>
+      このツールは個人による非公式プロジェクトであり、配信者や各プラットフォームの活動を妨げるものではありません。  
+      広告はサイト運営費の補助として表示されるもので、動画再生そのものに影響はありません。
+    </p>
+  </article>
 
   <section class="features">
     <div class="card">
@@ -149,7 +169,7 @@
     </div>
     <div class="card">
       <h3>💾 自動保存</h3>
-      <p>開いていた配信URLは自動的に保存され、次回開いてもそのまま再生可能。</p>
+      <p>開いていた配信URLは自動で保存され、次回開いてもすぐ再開できます。</p>
     </div>
     <div class="card">
       <h3>🔒 安全・非ログイン</h3>
@@ -159,11 +179,14 @@
 
   <section class="creator">
     <h2>🧑‍💻 開発・運営</h2>
-    <p>このサイトは個人開発による非公式のファン支援ツールです。<br>配信者の活動をより快適に楽しめる環境を目指しています。</p>
+    <p>
+      本サイトは「King（@kingu_486）」による個人開発プロジェクトです。  
+      配信をもっと便利に、もっと自由に楽しめる環境を目指しています。
+    </p>
     <div class="sns-links">
-      <a href="https://x.com/kingu_486" target="_blank">X（旧Twitter）</a>｜
-      <a href="https://www.youtube.com/@kingtube486" target="_blank">YouTube</a>｜
-      <a href="https://www.twitch.tv/king_486" target="_blank">Twitch</a>
+      <a href="https://x.com/kingu_486" target="_blank" rel="noopener">X（旧Twitter）</a>｜
+      <a href="https://www.youtube.com/@kingtube486" target="_blank" rel="noopener">YouTube</a>｜
+      <a href="https://www.twitch.tv/king_486" target="_blank" rel="noopener">Twitch</a>
     </div>
   </section>
 
@@ -174,7 +197,11 @@
       <a href="terms.html">利用規約</a>｜
       <a href="contact.html">お問い合わせ</a>
     </div>
-    <div>© 2025 オタク再生ツール</div>
+    <div style="margin-top:10px;">
+      当サイトはYouTubeおよびTwitchの公式埋め込み機能を利用しています。<br>
+      動画や配信の著作権は各配信者・プラットフォームに帰属します。
+    </div>
+    <div style="margin-top:8px;">© 2025 オタク再生ツール</div>
   </footer>
 </body>
 </html>
