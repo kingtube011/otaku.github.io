@@ -4,14 +4,19 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>このサイトについて | オタク再生ツール</title>
-  <meta name="description" content="オタク再生ツールは、YouTubeやTwitchの複数配信を同時に再生できる無料のWebアプリです。このページでは目的・機能・免責事項を紹介します。" />
+  <meta name="description" content="オタク再生ツールは、YouTubeやTwitchの複数配信を同時に再生できる無料のWebアプリです。このページでは目的・機能・免責事項・著作権への配慮を紹介します。" />
   <meta name="robots" content="index, follow">
   <meta name="author" content="オタク再生ツール運営チーム" />
+  <link rel="canonical" href="https://otaku-player.com/about.html" />
+
+  <!-- OGP -->
   <meta property="og:title" content="このサイトについて | オタク再生ツール" />
-  <meta property="og:description" content="オタク再生ツールは、YouTube・Twitchの複数配信を同時再生できる便利なWebアプリです。利用目的・免責事項を掲載しています。" />
-  <meta property="og:type" content="website" />
+  <meta property="og:description" content="オタク再生ツールは、YouTube・Twitchの複数配信を同時再生できる便利なWebアプリです。利用目的・機能・免責事項・著作権方針を掲載しています。" />
+  <meta property="og:type" content="article" />
   <meta property="og:url" content="https://otaku-player.com/about.html" />
   <meta property="og:site_name" content="オタク再生ツール" />
+  <meta property="og:image" content="https://otaku-player.com/ogp.jpg" />
+
   <style>
     body {
       font-family: "Noto Sans JP", sans-serif;
@@ -19,36 +24,35 @@
       color: #eee;
       background: #0e0e0e;
       padding: 30px;
-      max-width: 800px;
+      max-width: 850px;
       margin: auto;
     }
-
     h1 {
       color: #ff4081;
       text-align: center;
       margin-bottom: 20px;
     }
-
     h2 {
       color: #ff80b0;
-      margin-top: 30px;
+      margin-top: 35px;
       border-left: 4px solid #ff4081;
       padding-left: 10px;
     }
-
+    h3 {
+      color: #ffb6c1;
+      margin-top: 25px;
+      font-size: 1rem;
+    }
     ul {
       margin-left: 20px;
     }
-
     a {
       color: #ff80b0;
       text-decoration: none;
     }
-
     a:hover {
       text-decoration: underline;
     }
-
     footer {
       text-align: center;
       margin-top: 40px;
@@ -56,38 +60,37 @@
       padding-top: 20px;
       color: #aaa;
     }
-
     footer a {
       color: #ff80b0;
       margin: 0 6px;
     }
-
     footer a:hover {
       text-decoration: underline;
     }
   </style>
 
-  <!-- 構造化データ（Google向け） -->
+  <!-- 構造化データ（強化版） -->
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "WebSite",
-    "name": "オタク再生ツール",
-    "url": "https://otaku-player.com/",
-    "description": "オタク再生ツールは、YouTubeやTwitchの配信を同時に再生できる無料Webアプリです。",
+    "@type": "WebPage",
+    "name": "このサイトについて",
+    "description": "オタク再生ツールは、YouTubeやTwitchの配信を同時に再生できる無料Webアプリです。利用目的・機能・免責事項・著作権への配慮を紹介します。",
+    "url": "https://otaku-player.com/about.html",
     "publisher": {
       "@type": "Organization",
-      "name": "オタク再生ツール運営",
+      "name": "オタク再生ツール運営チーム",
       "url": "https://otaku-player.com/"
     }
   }
   </script>
 </head>
+
 <body>
   <h1>このサイトについて</h1>
 
   <p>
-    「オタク再生ツール」は、<strong>YouTube</strong>や<strong>Twitch</strong>で活動する複数の配信者を<br>
+    「オタク再生ツール」は、<strong>YouTube</strong>や<strong>Twitch</strong>で活動する複数の配信者を
     同時に視聴できるように設計された無料のWebアプリです。<br>
     配信ファンの「推し配信をまとめて見たい」という声から生まれました。
   </p>
@@ -95,7 +98,7 @@
   <h2>開発の目的</h2>
   <p>
     本サイトは、配信視聴をより快適に楽しむための環境を提供することを目的としています。<br>
-    公式プラットフォームの埋め込み機能およびAPIを使用しており、<br>
+    公式プラットフォームの埋め込み機能およびAPIを使用しており、
     違法な動画配信・データ収集などは一切行っていません。<br><br>
     また、本サイトは非公式のファンツールであり、YouTubeおよびTwitchの運営会社とは関係ありません。
   </p>
@@ -104,21 +107,36 @@
   <ul>
     <li>YouTube・Twitchのライブ配信を同時再生</li>
     <li>配信URLの保存と再生履歴機能</li>
-    <li>ワンクリックで配信者のライブ状況をチェック</li>
-    <li>プレイヤーの自動レイアウト調整（2画面まで横並び対応）</li>
+    <li>プレイヤーのドラッグによるレイアウト変更</li>
+    <li>再生位置・プレイヤー情報のブラウザ内保存</li>
+    <li>PC・スマホ両対応のシンプルUI</li>
   </ul>
+
+  <h2>安全性とプライバシー</h2>
+  <p>
+    本サイトでは、ユーザーの個人情報をサーバー上に保存していません。<br>
+    入力されたURLなどのデータは、すべてお使いのブラウザ内（ローカルストレージ）にのみ保存されます。<br>
+    第三者へのデータ共有や追跡を目的とした仕組みは使用していません。
+  </p>
+
+  <h2>著作権・コンテンツについて</h2>
+  <p>
+    当サイトで表示される動画や配信は、YouTube・Twitchが提供する公式の埋め込み機能を利用しています。<br>
+    各配信の著作権および関連する権利は、配信者本人またはプラットフォーム運営元に帰属します。<br>
+    本サイトはコンテンツの所有権を主張せず、外部の正規プレイヤー経由でのみ表示しています。
+  </p>
 
   <h2>利用上の注意</h2>
   <p>
-    当サイトは閲覧支援ツールであり、各配信プラットフォームのAPI利用規約に準拠しています。<br>
-    動画・音声などの著作権は、すべて各配信者またはプラットフォーム運営元に帰属します。<br>
-    不具合や障害が発生した場合も、配信元の都合により再生できないことがあります。
+    当サイトは配信閲覧を補助するためのツールであり、営利目的の動画再配信は行っていません。<br>
+    動作の不具合や視聴制限などは、配信元の仕様変更によって発生する場合があります。<br>
+    サービスの安定運用に努めていますが、恒久的な動作保証はいたしかねます。
   </p>
 
   <h2>免責事項</h2>
   <p>
     当サイトを利用したことによって発生したトラブル・損害・不利益について、運営者は一切の責任を負いません。<br>
-    また、掲載内容は予告なく変更・削除される場合があります。
+    また、掲載情報は予告なく変更または削除される場合があります。
   </p>
 
   <h2>お問い合わせ</h2>
@@ -133,6 +151,7 @@
       <a href="privacy.html">プライバシーポリシー</a>｜
       <a href="terms.html">利用規約</a>
     </div>
+    <div style="margin-top:10px;">© 2025 オタク再生ツール</div>
   </footer>
 </body>
 </html>
