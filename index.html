@@ -3,180 +3,135 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>オタク情報ラボ | ガジェット・インディーゲーム紹介 & 配信ツール</title>
-  <meta name="description" content="最新ガジェットレビュー、インディーゲーム紹介、便利な配信ツールをまとめた総合オタクメディア。あなたの趣味をもっと楽しく。">
+  <meta name="description" content="オタク再生ツールは、YouTubeとTwitchを同時に再生できる無料のビューワーです。あわせてガジェット・PC・インディーズゲームの最新ニュースも発信しています。" />
   <meta name="robots" content="index, follow">
-  <meta name="author" content="オタク情報ラボ">
-
-  <meta property="og:title" content="オタク情報ラボ | ガジェット・インディーゲーム紹介 & 配信支援ツール">
-  <meta property="og:description" content="話題のガジェット・インディーゲームのレビューから配信ツールまで。オタクに役立つ総合情報サイト。">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://otaku-player.com/">
-  <meta property="og:site_name" content="オタク情報ラボ">
+  <meta name="google-adsense-account" content="ca-pub-1233665276169336" />
+  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336" crossorigin="anonymous"></script>
+  <title>オタク再生ツール & ガジェットニュース</title>
 
   <style>
     body {
-      margin: 0;
       font-family: "Noto Sans JP", sans-serif;
+      margin: 0;
       background: #0e0e0e;
-      color: #eee;
+      color: #f0f0f0;
+      text-align: center;
+      line-height: 1.7;
     }
 
     header {
-      padding: 50px 20px;
-      text-align: center;
-      background: linear-gradient(135deg, #171717, #1f1f1f);
-      border-bottom: 1px solid #333;
+      padding: 60px 20px 40px;
+      background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
     }
 
     h1 {
-      font-size: 2.4rem;
+      font-size: 2.2rem;
+      color: #ff80b0;
       margin-bottom: 10px;
-      color: #ff80b0;
     }
 
-    .lead {
-      color: #ccc;
+    p.lead {
       font-size: 1rem;
+      color: #ccc;
+      margin-bottom: 25px;
     }
 
-    .section-title {
-      text-align: center;
-      font-size: 1.8rem;
-      margin-top: 60px;
-      margin-bottom: 20px;
+    .cta-button {
+      background: #ff4081;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 26px;
+      font-size: 1rem;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .cta-button:hover { background: #e73370; }
+
+    /* 記事カード */
+    .articles {
+      max-width: 900px;
+      margin: 40px auto;
+      padding: 0 20px;
+      text-align: left;
+    }
+
+    .articles h2 {
       color: #ff80b0;
+      margin-bottom: 20px;
+      border-left: 4px solid #ff4081;
+      padding-left: 10px;
     }
 
-    .card-grid {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 20px;
-      max-width: 1000px;
-      margin: auto;
-      padding: 20px;
-    }
-
-    .card {
+    .article-card {
       background: #181818;
       border-radius: 12px;
       padding: 20px;
-      width: 280px;
-      box-shadow: 0 0 10px rgba(255, 64, 129, 0.15);
-      transition: transform 0.3s, box-shadow 0.3s;
-      cursor: pointer;
-      text-decoration: none;
-      color: #eee;
+      margin-bottom: 20px;
+      transition: 0.3s;
+      box-shadow: 0 0 10px rgba(255, 64, 129, 0.1);
     }
 
-    .card:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 0 18px rgba(255, 64, 129, 0.25);
+    .article-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 0 20px rgba(255, 64, 129, 0.2);
     }
 
-    .card h3 {
+    .article-card a {
       color: #ff80b0;
-      margin-top: 0;
-    }
-
-    .tool-banner {
-      text-align: center;
-      margin: 60px 0 40px;
-    }
-
-    .tool-button {
-      background: #ff4081;
-      padding: 12px 30px;
-      border-radius: 8px;
       text-decoration: none;
-      color: white;
+      font-weight: bold;
       font-size: 1.1rem;
-      transition: background 0.3s;
-    }
-
-    .tool-button:hover {
-      background: #e73370;
     }
 
     footer {
-      margin-top: 60px;
+      margin-top: 50px;
       padding: 20px;
-      text-align: center;
-      border-top: 1px solid #333;
+      font-size: 0.9rem;
       color: #aaa;
+      border-top: 1px solid #333;
     }
     footer a {
       color: #ff80b0;
-      margin: 0 6px;
       text-decoration: none;
     }
-    footer a:hover {
-      text-decoration: underline;
-    }
+    footer a:hover { text-decoration: underline; }
   </style>
 </head>
 
 <body>
 
-<header>
-  <h1>オタク情報ラボ</h1>
-  <p class="lead">
-    ガジェット・インディーゲーム・便利ツールを紹介する総合オタクメディア。
-    <br>最新デバイスやおすすめゲームをわかりやすくレビュー！
-  </p>
-</header>
+  <header>
+    <h1>🎮 オタク再生ツール</h1>
+    <p class="lead">
+      YouTube × Twitch を同時に再生できる無料ツール。<br>
+      さらにガジェット・ゲーミングPC・インディーズゲームの最新ニュースも発信！
+    </p>
+    <a href="player/index.html"><button class="cta-button">ツールを開く</button></a>
+  </header>
 
-<!-- 最新記事カテゴリ -->
-<h2 class="section-title">📱 最新ガジェット紹介</h2>
-<div class="card-grid">
-  <a class="card" href="#">
-    <h3>🔋 モバイルバッテリー新作レビュー</h3>
-    <p>最新の急速充電モデルを徹底検証。普段使いに最適な1台を紹介。</p>
-  </a>
-  <a class="card" href="#">
-    <h3>🎧 コスパ最強ワイヤレスイヤホン</h3>
-    <p>1万円以下で買える高品質イヤホンを特集。</p>
-  </a>
-  <a class="card" href="#">
-    <h3>⌨ メカニカルキーボード新モデル</h3>
-    <p>ゲーマー・クリエイター向けの最新キーボードまとめ。</p>
-  </a>
-</div>
+  <!-- 記事一覧 -->
+  <section class="articles">
+    <h2>📰 最新記事</h2>
 
-<!-- インディーゲームカテゴリ -->
-<h2 class="section-title">🎮 インディーゲーム特集</h2>
-<div class="card-grid">
-  <a class="card" href="#">
-    <h3>⚔ Steam注目の新作インディー</h3>
-    <p>2025年の話題作をピックアップして解説。</p>
-  </a>
-  <a class="card" href="#">
-    <h3>🧩 パズル好きに刺さる名作</h3>
-    <p>センス抜群のゲームを厳選して紹介。</p>
-  </a>
-  <a class="card" href="#">
-    <h3>🌙 雰囲気ゲーの傑作まとめ</h3>
-    <p>世界観が神すぎるゲームたちを紹介。</p>
-  </a>
-</div>
+    <!-- 記事1 -->
+    <div class="article-card">
+      <a href="articles/steam-machine.html">Valve、超小型ゲーミングPC「Steam Machine」発表【レビュー記事】</a>
+      <p style="color:#ccc; margin-top:5px;">
+        2025年最新モデル、Steam専用ミニPCの特徴と性能を徹底解説。
+      </p>
+    </div>
 
-<!-- ツール紹介バナー -->
-<div class="tool-banner">
-  <h2 class="section-title">🛠 人気ツール：オタク再生ツール</h2>
-  <p>複数の配信を同時に見られる無料ツール。配信ファン必見！</p>
-  <a class="tool-button" href="player/index.html">ツールを使う</a>
-</div>
+    <!-- ここにどんどん記事を追加 -->
+  </section>
 
-<footer>
-  <div>
+  <footer>
     <a href="about.html">このサイトについて</a>｜
     <a href="privacy.html">プライバシーポリシー</a>｜
     <a href="terms.html">利用規約</a>｜
-    <a href="contact.html">お問い合わせ</a>
-  </div>
-  <div style="margin-top:10px;">© 2025 オタク情報ラボ</div>
-</footer>
+    <a href="contact.html">お問い合わせ</a><br><br>
+    © 2025 オタク再生ツール
+  </footer>
 
 </body>
 </html>
