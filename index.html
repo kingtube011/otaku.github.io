@@ -1,137 +1,131 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="オタク再生ツールは、YouTubeとTwitchを同時に再生できる無料のビューワーです。あわせてガジェット・PC・インディーズゲームの最新ニュースも発信しています。" />
-  <meta name="robots" content="index, follow">
-  <meta name="google-adsense-account" content="ca-pub-1233665276169336" />
-  <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1233665276169336" crossorigin="anonymous"></script>
-  <title>オタク再生ツール & ガジェットニュース</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>オタク再生ツール - ガジェット/ゲーム情報メディア</title>
+  <meta name="description" content="オタク再生ツールは、配信同時再生ツールの提供に加え、新しいガジェットやインディーズゲームの最新情報をまとめて紹介するサイトです。">
 
   <style>
     body {
-      font-family: "Noto Sans JP", sans-serif;
       margin: 0;
+      font-family: "Noto Sans JP", sans-serif;
       background: #0e0e0e;
-      color: #f0f0f0;
-      text-align: center;
+      color: #eee;
       line-height: 1.7;
     }
 
     header {
-      padding: 60px 20px 40px;
-      background: linear-gradient(135deg, #0e0e0e, #1a1a1a);
+      text-align: center;
+      padding: 40px 20px 20px;
     }
 
     h1 {
-      font-size: 2.2rem;
+      font-size: 2rem;
       color: #ff80b0;
       margin-bottom: 10px;
     }
 
-    p.lead {
-      font-size: 1rem;
-      color: #ccc;
-      margin-bottom: 25px;
-    }
-
-    .cta-button {
-      background: #ff4081;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      padding: 12px 26px;
-      font-size: 1rem;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .cta-button:hover { background: #e73370; }
-
-    /* 記事カード */
+    /* --- 記事一覧カード --- */
     .articles {
       max-width: 900px;
-      margin: 40px auto;
+      margin: 30px auto;
       padding: 0 20px;
-      text-align: left;
-    }
-
-    .articles h2 {
-      color: #ff80b0;
-      margin-bottom: 20px;
-      border-left: 4px solid #ff4081;
-      padding-left: 10px;
     }
 
     .article-card {
-      background: #181818;
-      border-radius: 12px;
-      padding: 20px;
+      display: flex;
+      background: #1a1a1a;
+      border-radius: 10px;
+      overflow: hidden;
       margin-bottom: 20px;
-      transition: 0.3s;
-      box-shadow: 0 0 10px rgba(255, 64, 129, 0.1);
+      text-decoration: none;
+      color: inherit;
+      box-shadow: 0 0 10px rgba(255, 64, 129, 0.15);
+      transition: transform 0.2s;
     }
 
     .article-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 0 20px rgba(255, 64, 129, 0.2);
+      transform: translateY(-3px);
+      box-shadow: 0 0 15px rgba(255, 64, 129, 0.3);
     }
 
-    .article-card a {
-      color: #ff80b0;
-      text-decoration: none;
-      font-weight: bold;
+    .article-thumb {
+      width: 140px;
+      height: 100px;
+      object-fit: cover;
+    }
+
+    .article-content {
+      padding: 15px;
+    }
+
+    .article-title {
       font-size: 1.1rem;
+      color: #ff80b0;
+      margin: 0 0 6px;
     }
 
-    footer {
-      margin-top: 50px;
-      padding: 20px;
-      font-size: 0.9rem;
-      color: #aaa;
-      border-top: 1px solid #333;
+    .article-desc {
+      color: #ccc;
+      font-size: 0.85rem;
+      margin: 0;
     }
+
+    /* --- フッター --- */
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      border-top: 1px solid #333;
+      padding: 20px;
+      color: #aaa;
+    }
+
     footer a {
       color: #ff80b0;
-      text-decoration: none;
+      margin: 0 6px;
     }
-    footer a:hover { text-decoration: underline; }
-  </style>
-</head>
 
+    /* スマホ */
+    @media (max-width: 700px) {
+      .article-card {
+        flex-direction: column;
+      }
+      .article-thumb {
+        width: 100%;
+        height: 180px;
+      }
+    }
+  </style>
+
+</head>
 <body>
 
-  <header>
-    <h1>🎮 オタク再生ツール</h1>
-    <p class="lead">
-      YouTube × Twitch を同時に再生できる無料ツール。<br>
-      さらにガジェット・ゲーミングPC・インディーズゲームの最新ニュースも発信！
-    </p>
-    <a href="player/index.html"><button class="cta-button">ツールを開く</button></a>
-  </header>
+<header>
+  <h1>オタク再生ツール</h1>
+  <p>配信同時再生ツール ＋ ガジェット・ゲームレビュー</p>
+  <p><a href="player/index.html" style="color:#ff4081; font-weight:bold;">▶ 同時再生ツールを開く</a></p>
+</header>
 
-  <!-- 記事一覧 -->
-  <section class="articles">
-    <h2>📰 最新記事</h2>
+<section class="articles">
 
-    <!-- 記事1 -->
-    <div class="article-card">
-      <a href="articles/steam-machine.html">Valve、超小型ゲーミングPC「Steam Machine」発表【レビュー記事】</a>
-      <p style="color:#ccc; margin-top:5px;">
-        2025年最新モデル、Steam専用ミニPCの特徴と性能を徹底解説。
-      </p>
+  <!-- ▼ 記事カード（Steam Machine）-->
+  <a href="articles/steam-machine/" class="article-card">
+    <img src="img/steam-machine.jpg" alt="Steam Machine" class="article-thumb">
+    <div class="article-content">
+      <p class="article-title">Valve「Steam Machine」レビュー — 超小型ゲーミングPCの実力は？</p>
+      <p class="article-desc">Steam Deckに続く新コンセプトの据え置き型Steam専用マシン。その特徴と魅力を徹底解説。</p>
     </div>
+  </a>
 
-    <!-- ここにどんどん記事を追加 -->
-  </section>
+</section>
 
-  <footer>
-    <a href="about.html">このサイトについて</a>｜
-    <a href="privacy.html">プライバシーポリシー</a>｜
-    <a href="terms.html">利用規約</a>｜
-    <a href="contact.html">お問い合わせ</a><br><br>
-    © 2025 オタク再生ツール
-  </footer>
+<footer>
+  <a href="about.html">このサイトについて</a>｜
+  <a href="privacy.html">プライバシーポリシー</a>｜
+  <a href="terms.html">利用規約</a>｜
+  <a href="contact.html">お問い合わせ</a>
+</footer>
 
 </body>
 </html>
